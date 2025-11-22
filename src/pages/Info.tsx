@@ -8,7 +8,7 @@ export default function Info() {
           <div className="flex items-center justify-center">
             <div className="w-64 h-64">
               <ImageWithFallback
-                src="https://github.com/charavts/Gorgonstone-merch/blob/main/src/public/logo.png?raw=true"
+                src="https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/logo.png"
                 alt="Gorgonstone Logo"
                 className="w-full h-full object-contain"
               />
