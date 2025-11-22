@@ -23,7 +23,7 @@ export default function Contact() {
             </div>
             <a
               href={`mailto:${email}`}
-              className="text-white hover:text-white/80 transition-colors block text-center"
+              className="text-white hover:text-white/80 transition-colors block text-center cursor-pointer"
             >
               {email}
             </a>
@@ -31,7 +31,7 @@ export default function Contact() {
 
           <a
             href={`mailto:${email}`}
-            className="w-full bg-black hover:bg-[#444] text-white px-6 py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-black hover:bg-[#444] text-white px-6 py-4 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
             <Send size={20} />
             <span>{t('contact.send')} Email</span>

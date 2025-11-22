@@ -13,17 +13,17 @@ export default function Header() {
       <div className="flex items-center justify-between px-1 sm:px-5 py-2 sm:py-3">
         <div className="flex items-center gap-0.5 sm:gap-4">
           <Link to="/">
-            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base">
+            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base cursor-pointer">
               {t('nav.home')}
             </button>
           </Link>
           <Link to="/info">
-            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base">
+            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base cursor-pointer">
               {t('nav.info')}
             </button>
           </Link>
           <Link to="/contact">
-            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base">
+            <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base cursor-pointer">
               {t('nav.contact')}
             </button>
           </Link>
@@ -33,7 +33,7 @@ export default function Header() {
           {/* Language Switcher - Shows CURRENT language */}
           <button
             onClick={toggleLanguage}
-            className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-4 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+            className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-4 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base cursor-pointer"
             title={language === 'el' ? 'Ελληνικά - Πάτα για English' : 'English - Click for Ελληνικά'}
           >
             <Languages size={18} className="sm:w-5 sm:h-5" />
@@ -42,7 +42,7 @@ export default function Header() {
 
           {/* Cart Button */}
           <Link to="/cart" className="relative">
-            <button className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-5 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
+            <button className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-5 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base cursor-pointer">
               <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
               <span className="hidden xs:inline sm:inline">{t('nav.cart')}</span>
               {cartCount > 0 && (

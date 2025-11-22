@@ -51,7 +51,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             <button
               key={size}
               onClick={() => setSelectedSize(size)}
-              className={`px-3 sm:px-4 py-2 rounded transition-colors text-sm ${
+              className={`px-3 sm:px-4 py-2 rounded transition-colors text-sm cursor-pointer ${
                 selectedSize === size
                   ? 'bg-black text-white'
                   : 'bg-[#6a6562] text-white/70 hover:bg-[#777] hover:text-white'
@@ -65,7 +65,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       
       <button
         onClick={handleAddToCart}
-        className="bg-black hover:bg-[#444] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-colors relative text-sm sm:text-base"
+        className="bg-black hover:bg-[#444] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-colors relative text-sm sm:text-base cursor-pointer"
       >
         {showSuccess ? `${t('home.addToCart')}!` : t('home.addToCart')}
       </button>

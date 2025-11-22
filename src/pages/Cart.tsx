@@ -107,7 +107,7 @@ export default function Cart() {
             Add some products to your cart to get started!
           </p>
           <Link to="/">
-            <button className="bg-black hover:bg-[#444] text-white px-8 py-3 rounded-lg transition-colors">
+            <button className="bg-black hover:bg-[#444] text-white px-8 py-3 rounded-lg transition-colors cursor-pointer">
               {t('cart.continueShopping')}
             </button>
           </Link>
@@ -149,7 +149,7 @@ export default function Cart() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
-                    className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors"
+                    className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors cursor-pointer"
                   >
                     <Minus size={16} />
                   </button>
@@ -158,7 +158,7 @@ export default function Cart() {
                   </span>
                   <button
                     onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
-                    className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors"
+                    className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors cursor-pointer"
                   >
                     <Plus size={16} />
                   </button>
@@ -170,7 +170,7 @@ export default function Cart() {
                 
                 <button
                   onClick={() => removeFromCart(item.id, item.size)}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors"
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors cursor-pointer"
                 >
                   <Trash2 size={20} />
                 </button>
@@ -266,14 +266,14 @@ export default function Cart() {
             
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/" className="flex-1">
-                <button className="w-full bg-[#444] hover:bg-[#555] text-white px-6 py-4 rounded-lg transition-colors">
+                <button className="w-full bg-[#444] hover:bg-[#555] text-white px-6 py-4 rounded-lg transition-colors cursor-pointer">
                   {t('cart.continueShopping')}
                 </button>
               </Link>
               <button
                 onClick={handleCheckout}
                 disabled={isLoading}
-                className="flex-1 bg-black hover:bg-[#333] text-white px-6 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-black hover:bg-[#333] text-white px-6 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isLoading ? t('cart.processing') : t('cart.continuePurchase')}
               </button>
