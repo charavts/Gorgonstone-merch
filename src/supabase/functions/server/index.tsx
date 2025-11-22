@@ -59,14 +59,21 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
     });
 
     const body = await c.req.json();
-    const { items, locale } = body;
+    const { items, locale, shippingCountry, shippingCost } = body;
 
     console.log("Received items:", JSON.stringify(items));
     console.log("Received locale:", locale);
+    console.log("Received shipping country:", shippingCountry);
+    console.log("Received shipping cost:", shippingCost);
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       console.error("Invalid items provided:", items);
       return c.json({ error: "Invalid items provided" }, 400);
+    }
+
+    if (!shippingCountry || !shippingCost) {
+      console.error("Missing shipping information");
+      return c.json({ error: "Missing shipping information" }, 400);
     }
 
     // Create line items for Stripe
@@ -75,7 +82,6 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
         currency: "eur",
         product_data: {
           name: `${item.name} - Size: ${item.size}`,
-          // Remove images as they might cause issues
         },
         unit_amount: Math.round(item.price * 100), // Convert to cents
       },
@@ -91,20 +97,62 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
     const stripeLocale = locale === 'el' ? 'el' : 'en';
     console.log(`Setting Stripe checkout locale to: ${stripeLocale}`);
     
-    // Create checkout session
+    // Determine delivery estimate based on country
+    let deliveryMin = 2;
+    let deliveryMax = 3;
+    if (shippingCountry === 'CY') {
+      deliveryMin = 3;
+      deliveryMax = 5;
+    } else if (shippingCountry !== 'GR') {
+      deliveryMin = 5;
+      deliveryMax = 7;
+    }
+
+    // Create a single shipping rate for the selected country
+    console.log(`Creating shipping rate for ${shippingCountry}...`);
+    const shippingRateName = locale === 'el' ? 'ACS Courier (Κατ\'οίκον)' : 'ACS Courier (Home)';
+    const shippingRate = await stripe.shippingRates.create({
+      display_name: shippingRateName,
+      type: 'fixed_amount',
+      fixed_amount: {
+        amount: Math.round(shippingCost * 100), // Convert to cents
+        currency: 'eur',
+      },
+      delivery_estimate: {
+        minimum: {
+          unit: 'business_day',
+          value: deliveryMin,
+        },
+        maximum: {
+          unit: 'business_day',
+          value: deliveryMax,
+        },
+      },
+      metadata: {
+        country: shippingCountry,
+        locale: locale,
+      },
+    });
+
+    console.log(`Created shipping rate: ${shippingRate.id} for ${shippingCountry} (${shippingCost}€)`);
+    
+    // Create checkout session with the specific shipping rate
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
       success_url: `${origin}/#/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#/cart`,
-      locale: stripeLocale, // Set the language for Stripe Checkout
+      locale: stripeLocale,
       phone_number_collection: {
         enabled: true,
       },
       shipping_address_collection: {
-        allowed_countries: ['GR', 'CY', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'SE', 'DK', 'NO', 'FI', 'PT', 'IE', 'LU', 'CH'],
+        allowed_countries: [shippingCountry], // Only allow the selected country
       },
+      shipping_options: [
+        { shipping_rate: shippingRate.id },
+      ],
     });
 
     console.log("Checkout session created successfully:", session.id);
