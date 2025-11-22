@@ -8,35 +8,35 @@ const products: Product[] = [
     id: '1',
     name: 'Black T-shirt Split Stone Face',
     price: 28,
-    image: '/black-tshirt.png',
+    image: '/Black-T-shirt Split Stone Face.png',
     stripeUrl: 'https://buy.stripe.com/test_fZu14p84Vd7Oeyk3Of00004'
   },
   {
     id: '2',
     name: 'Medusa Mask T-shirt White',
     price: 28,
-    image: '/white-tshirt.png',
+    image: '/Medusa Mask T-shirt White.png',
     stripeUrl: 'https://buy.stripe.com/28E8wQ3yl8hF5476ob2Nq02'
   },
   {
     id: '3',
     name: 'High-Quality Cotton Hoodie Black',
     price: 40,
-    image: '/black-hoodie.png',
+    image: '/High-Quality Cotton Hoodie Black.png',
     stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00'
   },
   {
     id: '4',
     name: 'High-Quality Cotton Hoodie White',
     price: 40,
-    image: '/white-hoodie.png',
+    image: '/High-Quality Cotton Hoodie White.png',
     stripeUrl: 'https://buy.stripe.com/cNi00k1qd2XlaordQD2Nq01'
   },
   {
     id: '5',
     name: 'High-Quality Cotton Sweatshirt Black',
     price: 36,
-    image: '/black-sweatshirt.png',
+    image: '/High-Quality Cotton Sweatshirt Black.png',
     stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03'
   }
 ];
