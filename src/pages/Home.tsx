@@ -43,7 +43,7 @@ export default function Home() {
   const { addToCart } = useCart();
 
   return (
-    <main className="pt-24 pb-8 px-5">
+    <main className="pt-24 pb-40 px-5">{/* Increased bottom padding from pb-20 to pb-40 for much larger space */}
       {/* Logo Section */}
       <div className="mb-12">
         <div className="py-0">
