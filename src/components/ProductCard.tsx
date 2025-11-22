@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Product } from '../context/CartContext';
+import { Product, Size } from '../context/CartContext';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, size: Size) => void;
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<Size>('Medium');
 
   const handleAddToCart = () => {
-    onAddToCart(product);
+    onAddToCart(product, selectedSize);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
   };
@@ -39,6 +40,26 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       <p className="text-white mb-4">
         Price: {product.price}€
       </p>
+      
+      {/* Size Selection */}
+      <div className="mb-4 w-full">
+        <label className="text-white text-sm mb-2 block text-center">Size:</label>
+        <div className="flex gap-2 justify-center">
+          {(['Small', 'Medium', 'Large'] as Size[]).map((size) => (
+            <button
+              key={size}
+              onClick={() => setSelectedSize(size)}
+              className={`px-4 py-2 rounded transition-colors ${
+                selectedSize === size
+                  ? 'bg-black text-white'
+                  : 'bg-[#56514f] text-white/70 hover:bg-[#444] hover:text-white'
+              }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
+      </div>
       
       <button
         onClick={handleAddToCart}

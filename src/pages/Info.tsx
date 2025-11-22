@@ -3,19 +3,17 @@ import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 export default function Info() {
   return (
     <main className="pt-24 pb-8 px-5">
-      <div className="max-w-4xl mx-auto bg-[#6a6562] rounded-lg p-8 shadow-lg">
-        {/* Centered Logo at top */}
-        <div className="flex justify-center mb-2">
-          <div className="w-64 h-64">
-            <ImageWithFallback
-              src="https://github.com/charavts/Gorgonstone-merch/blob/main/src/public/logo.png?raw=true"
-              alt="Gorgonstone Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </div>
+      {/* Top center logo */}
+      <div className="mb-8 flex justify-center w-full opacity-80">
+        <ImageWithFallback
+          src="https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/logo.png"
+          alt="Gorgonstone Logo"
+          className="w-[450px] max-w-[90vw] h-auto"
+        />
+      </div>
 
-        {/* Text section below */}
+      <div className="max-w-4xl mx-auto bg-[#6a6562] rounded-lg p-8 shadow-lg mb-8">
+        {/* Text section */}
         <div className="bg-[#56514f] rounded-lg p-8">
           <div className="text-white space-y-4">
             <p className="text-white/90 leading-relaxed">

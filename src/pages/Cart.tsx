@@ -53,7 +53,7 @@ export default function Cart() {
           <div className="space-y-4 mb-6">
             {cartItems.map((item) => (
               <div
-                key={item.id}
+                key={`${item.id}-${item.size}`}
                 className="bg-[#56514f] rounded-lg p-4 flex flex-col md:flex-row gap-4 items-center"
               >
                 <div className="w-24 h-24 flex-shrink-0">
@@ -69,11 +69,14 @@ export default function Cart() {
                   <p className="text-white/80">
                     {item.price}€ each
                   </p>
+                  <p className="text-white/60 text-sm mt-1">
+                    Size: {item.size}
+                  </p>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
                     className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors"
                   >
                     <Minus size={16} />
@@ -82,7 +85,7 @@ export default function Cart() {
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
                     className="bg-[#444] hover:bg-[#555] text-white w-8 h-8 rounded flex items-center justify-center transition-colors"
                   >
                     <Plus size={16} />
@@ -94,7 +97,7 @@ export default function Cart() {
                 </div>
                 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.id, item.size)}
                   className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors"
                 >
                   <Trash2 size={20} />
