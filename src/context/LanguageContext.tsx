@@ -24,12 +24,14 @@ const translations = {
     'home.products': 'Προϊόντα',
     'home.addToCart': 'Προσθήκη στο Καλάθι',
     'home.sizeLabel': 'Μέγεθος:',
+    'home.colorLabel': 'Χρώμα:',
     
     // Cart Page
     'cart.title': 'Το Καλάθι σας',
     'cart.empty': 'Το καλάθι σας είναι άδειο',
     'cart.continueShopping': 'Συνεχίστε τις Αγορές',
     'cart.size': 'Μέγεθος',
+    'cart.color': 'Χρώμα',
     'cart.quantity': 'Ποσότητα',
     'cart.price': 'Τιμή',
     'cart.total': 'Σύνολο',
@@ -60,7 +62,7 @@ const translations = {
     'info.title': 'Σχετικά με το Gorgonstone',
     'info.subtitle': 'Όπου η μυθολογία συναντά τη μόδα',
     'info.story': 'Η Ιστορία μας',
-    'info.storyText': 'Το Gorgonstone γεννήθηκε από το πάθος για την αρχαία ελληνική ��υθολογία και την τέχνη. Κάθε σχέδιό μας εμπνέεται από τον μύθο του Περσέα και της Μέδουσας, φέρνοντας την αρχαία ιστορία στο σύγχρονο streetwear.',
+    'info.storyText': 'Το Gorgonstone γεννήθη��ε από το πάθος για την αρχαία ελληνική υθολογία και την τέχνη. Κάθε σχέδιό μας εμπνέεται από τον μύθο του Περσέα και της Μέδουσας, φέρνοντας την αρχαία ιστορία στο σύγχρονο streetwear.',
     'info.quality': 'Ποιότητα',
     'info.qualityText': 'Χρησιμοποιούμε μόνο premium υλικά και τεχνικές εκτύπωσης για να διασφαλίσουμε ότι κάθε κομμάτι είναι ανθεκτικό και άνετο.',
     'info.mission': 'Η Αποστολή μας',
@@ -84,12 +86,14 @@ const translations = {
     'home.products': 'Products',
     'home.addToCart': 'Add to Cart',
     'home.sizeLabel': 'Size:',
+    'home.colorLabel': 'Color:',
     
     // Cart Page
     'cart.title': 'Your Cart',
     'cart.empty': 'Your cart is empty',
     'cart.continueShopping': 'Continue Shopping',
     'cart.size': 'Size',
+    'cart.color': 'Color',
     'cart.quantity': 'Quantity',
     'cart.price': 'Price',
     'cart.total': 'Total',

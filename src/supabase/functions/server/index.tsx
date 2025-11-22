@@ -77,16 +77,24 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
     }
 
     // Create line items for Stripe
-    const lineItems = items.map((item: any) => ({
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: `${item.name} - Size: ${item.size}`,
+    const lineItems = items.map((item: any) => {
+      let productName = item.name;
+      if (item.color) {
+        productName = `${item.name} - ${item.color}`;
+      }
+      productName += ` - Size: ${item.size}`;
+      
+      return {
+        price_data: {
+          currency: "eur",
+          product_data: {
+            name: productName,
+          },
+          unit_amount: Math.round(item.price * 100), // Convert to cents
         },
-        unit_amount: Math.round(item.price * 100), // Convert to cents
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      };
+    });
 
     console.log("Creating Stripe checkout session with line items:", JSON.stringify(lineItems));
 

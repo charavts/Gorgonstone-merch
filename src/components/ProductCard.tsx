@@ -1,24 +1,32 @@
 import { useState } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Product, Size } from '../context/CartContext';
+import { Product, Size, Color } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product, size: Size) => void;
+  onAddToCart: (product: Product, size: Size, color?: Color) => void;
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedSize, setSelectedSize] = useState<Size>('Medium');
+  const [selectedColor, setSelectedColor] = useState<Color | undefined>(
+    product.colors?.[0] // Default to first color if colors exist
+  );
   const { t } = useLanguage();
 
   const handleAddToCart = () => {
-    onAddToCart(product, selectedSize);
+    onAddToCart(product, selectedSize, selectedColor);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
   };
+
+  // Get the current image based on selected color
+  const currentImage = selectedColor && product.imageVariants 
+    ? product.imageVariants[selectedColor] 
+    : product.image;
 
   return (
     <div className="w-full max-w-[300px] sm:w-[300px] flex flex-col items-center justify-between bg-[#56514f] rounded-lg p-4 sm:p-5 shadow-lg transition-transform hover:scale-105">
@@ -28,7 +36,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         onMouseLeave={() => setIsHovered(false)}
       >
         <ImageWithFallback
-          src={product.image}
+          src={currentImage}
           alt={product.name}
           className="w-full h-full object-contain transition-transform duration-300"
           style={{ transform: isHovered ? 'scale(1.1)' : 'scale(1)' }}
@@ -42,6 +50,28 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       <p className="text-white mb-3 sm:mb-4">
         Price: {product.price}€
       </p>
+      
+      {/* Color Selection - Only show if product has colors */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="mb-3 sm:mb-4 w-full">
+          <label className="text-white text-sm mb-2 block text-center">{t('home.colorLabel')}</label>
+          <div className="flex gap-2 justify-center">
+            {product.colors.map((color) => (
+              <button
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                className={`px-3 sm:px-4 py-2 rounded transition-colors text-sm cursor-pointer ${
+                  selectedColor === color
+                    ? 'bg-black text-white'
+                    : 'bg-[#6a6562] text-white/70 hover:bg-[#777] hover:text-white'
+                }`}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Size Selection */}
       <div className="mb-3 sm:mb-4 w-full">

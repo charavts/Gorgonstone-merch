@@ -20,17 +20,15 @@ const products: Product[] = [
   },
   {
     id: '3',
-    name: 'High-Quality Cotton Hoodie Black',
+    name: 'High-Quality Cotton Hoodie',
     price: 40,
     image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
-    stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00'
-  },
-  {
-    id: '4',
-    name: 'High-Quality Cotton Hoodie White',
-    price: 40,
-    image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20White.png',
-    stripeUrl: 'https://buy.stripe.com/cNi00k1qd2XlaordQD2Nq01'
+    stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00',
+    colors: ['Black', 'White'],
+    imageVariants: {
+      'Black': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
+      'White': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20White.png'
+    }
   },
   {
     id: '5',
