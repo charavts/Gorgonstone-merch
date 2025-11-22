@@ -1,5 +1,4 @@
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import logoImage from 'figma:asset/50d624aa13c522bfa22e236365b881e163b313eb.png';
 
 export default function Info() {
   return (
@@ -9,7 +8,7 @@ export default function Info() {
           <div className="flex items-center justify-center">
             <div className="w-64 h-64">
               <ImageWithFallback
-                src={logoImage}
+                src="/logo.png"
                 alt="Gorgonstone Logo"
                 className="w-full h-full object-contain"
               />
