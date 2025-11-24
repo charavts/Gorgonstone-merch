@@ -17,6 +17,7 @@ const translations = {
     'nav.contact': 'Επικοινωνία',
     'nav.info': 'Πληροφορίες',
     'nav.cart': 'Cart',
+    'nav.myOrders': 'Οι Παραγγελίες μου',
     
     // Home Page
     'home.title': 'Καλωσήρθατε στο Gorgonstone',
@@ -83,6 +84,23 @@ const translations = {
     'auth.password': 'Κωδικός',
     'auth.name': 'Όνομα',
     
+    // My Orders
+    'orders.title': 'Οι Παραγγελίες μου',
+    'orders.noOrders': 'Δεν έχετε παραγγελίες ακόμα',
+    'orders.startShopping': 'Ξεκινήστε τις Αγορές',
+    'orders.orderId': 'Παραγγελία',
+    'orders.date': 'Ημερομηνία',
+    'orders.status': 'Κατάσταση',
+    'orders.total': 'Σύνολο',
+    'orders.items': 'Προϊόντα',
+    'orders.shippingAddress': 'Διεύθυνση Αποστολής',
+    'orders.paymentMethod': 'Τρόπος Πληρωμής',
+    'orders.card': 'Κάρτα',
+    'orders.statusPaid': 'Πληρώθηκε',
+    'orders.statusProcessing': 'Επεξεργασία',
+    'orders.statusShipped': 'Απεστάλη',
+    'orders.statusDelivered': 'Παραδόθηκε',
+    
     // Footer
     'footer.copyright': '© 2024 Gorgonstone. Όλα τα δικαιώματα κατοχυρωμένα.',
     'footer.privacyPolicy': 'Πολιτική Απορρήτου',
@@ -94,6 +112,7 @@ const translations = {
     'nav.contact': 'Contact',
     'nav.info': 'Info',
     'nav.cart': 'Cart',
+    'nav.myOrders': 'My Orders',
     
     // Home Page
     'home.title': 'Welcome to Gorgonstone',
@@ -159,6 +178,23 @@ const translations = {
     'auth.email': 'Email',
     'auth.password': 'Password',
     'auth.name': 'Name',
+    
+    // My Orders
+    'orders.title': 'My Orders',
+    'orders.noOrders': 'You have no orders yet',
+    'orders.startShopping': 'Start Shopping',
+    'orders.orderId': 'Order',
+    'orders.date': 'Date',
+    'orders.status': 'Status',
+    'orders.total': 'Total',
+    'orders.items': 'Items',
+    'orders.shippingAddress': 'Shipping Address',
+    'orders.paymentMethod': 'Payment Method',
+    'orders.card': 'Card',
+    'orders.statusPaid': 'Paid',
+    'orders.statusProcessing': 'Processing',
+    'orders.statusShipped': 'Shipped',
+    'orders.statusDelivered': 'Delivered',
     
     // Footer
     'footer.copyright': '© 2024 Gorgonstone. All rights reserved.',

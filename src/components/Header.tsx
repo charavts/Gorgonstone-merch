@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Languages, User, LogOut, Settings } from 'lucide-react';
+import { ShoppingCart, Languages, User, LogOut, Settings, Package } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -37,6 +37,16 @@ export default function Header() {
               {t('nav.contact')}
             </button>
           </Link>
+          
+          {/* My Orders Button - Only for logged-in users */}
+          {user && (
+            <Link to="/my-orders">
+              <button className="bg-[#444] hover:bg-[#555] text-white px-1.5 sm:px-5 py-2 rounded transition-colors text-xs sm:text-base cursor-pointer flex items-center gap-1">
+                <Package size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{t('nav.myOrders')}</span>
+              </button>
+            </Link>
+          )}
         </div>
         
         <div className="flex items-center gap-1 sm:gap-2">

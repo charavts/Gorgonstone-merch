@@ -15,6 +15,7 @@ import TermsOfService from './pages/TermsOfService';
 import ProductDetail from './pages/ProductDetail';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
+import MyOrders from './pages/MyOrders';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/my-orders" element={<MyOrders />} />
                 <Route path="*" element={<Home />} />
               </Routes>
               <Footer />

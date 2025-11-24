@@ -1,19 +1,106 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 export default function Success() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const { clearCart } = useCart();
+  const { cart, clearCart } = useCart();
   const { t } = useLanguage();
+  const { user, getAccessToken } = useAuth();
+  const [orderSaved, setOrderSaved] = useState(false);
 
   useEffect(() => {
-    // Clear cart on successful purchase
-    clearCart();
-  }, [clearCart]);
+    const saveOrderAndClearCart = async () => {
+      // Only save order if user is logged in and we have cart items
+      if (!user || !sessionId || cart.length === 0 || orderSaved) {
+        if (cart.length > 0 && !orderSaved) {
+          clearCart(); // Clear cart even if not logged in
+        }
+        return;
+      }
+
+      try {
+        console.log('💾 Saving order after successful payment...');
+        
+        // Get cart data before clearing
+        const orderItems = cart.map(item => ({
+          productId: item.id,
+          name: item.name,
+          nameEl: item.nameEl,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image
+        }));
+
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        
+        // Get shipping info from localStorage (saved during checkout)
+        const shippingCountry = localStorage.getItem('last_shipping_country') || 'GR';
+        const shippingCostStr = localStorage.getItem('last_shipping_cost') || '3.50';
+        const shippingCost = parseFloat(shippingCostStr);
+
+        // Create a basic shipping address (Stripe has the real one)
+        // In a real app, you'd fetch this from Stripe API
+        const shippingAddress = {
+          name: user.name || user.email || 'Customer',
+          email: user.email || '',
+          address: 'Provided during checkout',
+          city: '',
+          postalCode: '',
+          country: shippingCountry
+        };
+
+        const accessToken = await getAccessToken();
+        
+        if (!accessToken) {
+          console.error('No access token available');
+          clearCart();
+          return;
+        }
+
+        // Save order to backend
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/save-order`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+              orderId: sessionId,
+              items: orderItems,
+              total,
+              shippingCost,
+              shippingAddress,
+              paymentMethod: 'Card (****)'
+            }),
+          }
+        );
+
+        if (response.ok) {
+          console.log('✅ Order saved successfully');
+          setOrderSaved(true);
+        } else {
+          console.error('Failed to save order:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error saving order:', error);
+      } finally {
+        // Always clear cart after payment success
+        clearCart();
+      }
+    };
+
+    saveOrderAndClearCart();
+  }, [user, sessionId, cart, clearCart, orderSaved, getAccessToken]);
 
   return (
     <main className="pt-24 pb-16 px-5 min-h-screen flex items-center justify-center">

@@ -623,7 +623,7 @@ function getDefaultSiteSettings() {
       'BE': { name: 'Βέλγιο', nameEn: 'Belgium', cost: 12.00 },
       'BG': { name: 'Βουλγαρία', nameEn: 'Bulgaria', cost: 12.00 },
       'HR': { name: 'Κροατία', nameEn: 'Croatia', cost: 12.00 },
-      'CZ': { name: 'Τ��εχία', nameEn: 'Czech Republic', cost: 12.00 },
+      'CZ': { name: 'Τεχία', nameEn: 'Czech Republic', cost: 12.00 },
       'DK': { name: 'Δανία', nameEn: 'Denmark', cost: 12.00 },
       'EE': { name: 'Εσθονία', nameEn: 'Estonia', cost: 12.00 },
       'FI': { name: 'Φινλανδία', nameEn: 'Finland', cost: 12.00 },
@@ -649,7 +649,7 @@ function getDefaultSiteSettings() {
       },
       el: {
         paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σ μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
-        paragraph2: 'Η βασική έμπνευση προέρχεται από τον θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
+        paragraph2: 'Η βασική έμπνευση προέρχεται από τ��ν θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
         paragraph3: 'Κάθε κομμάτι στοχεει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να μεταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.'
       }
     },
@@ -953,6 +953,96 @@ app.post("/make-server-deab0cbd/upload-image", async (c) => {
   } catch (error) {
     console.error('Upload image error:', error.message);
     return c.json({ error: `Upload failed: ${error.message}` }, 500);
+  }
+});
+
+// ============== ORDERS ENDPOINTS ==============
+
+// Save order after successful Stripe payment
+app.post("/make-server-deab0cbd/save-order", async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) {
+      console.error('❌ Unauthorized - no valid user:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    const { orderId, items, total, shippingCost, shippingAddress, paymentMethod } = await c.req.json();
+    
+    console.log('💾 Saving order for user:', user.id);
+    console.log('📦 Order ID:', orderId);
+    console.log('🛒 Items:', items);
+    console.log('💰 Total:', total);
+
+    if (!orderId || !items || !total || !shippingAddress) {
+      return c.json({ error: 'Missing required order data' }, 400);
+    }
+
+    // Create order object
+    const order = {
+      orderId,
+      userId: user.id,
+      userEmail: user.email,
+      items,
+      total,
+      shippingCost: shippingCost || 0,
+      shippingAddress,
+      paymentMethod: paymentMethod || 'card',
+      status: 'paid',
+      createdAt: new Date().toISOString(),
+    };
+
+    // Save order to KV store with key: order_{userId}_{orderId}
+    const orderKey = `order_${user.id}_${orderId}`;
+    await kv.set(orderKey, order);
+
+    console.log('✅ Order saved successfully:', orderKey);
+
+    return c.json({ success: true, order });
+  } catch (error) {
+    console.error('❌ Save order error:', error.message);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Get user's orders
+app.get("/make-server-deab0cbd/my-orders", async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) {
+      console.error('❌ Unauthorized - no valid user:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    console.log('📦 Fetching orders for user:', user.id);
+
+    // Get all orders for this user (prefix: order_{userId}_)
+    const orderPrefix = `order_${user.id}_`;
+    const orders = await kv.getByPrefix(orderPrefix);
+
+    console.log('✅ Found orders:', orders.length);
+
+    // Sort orders by date (newest first)
+    const sortedOrders = orders.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    return c.json({ orders: sortedOrders });
+  } catch (error) {
+    console.error('❌ Get orders error:', error.message);
+    return c.json({ error: error.message }, 500);
   }
 });
 

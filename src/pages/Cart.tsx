@@ -163,6 +163,11 @@ export default function Cart() {
 
       if (data.url) {
         console.log('Redirecting to Stripe:', data.url);
+        
+        // Save shipping info to localStorage for order tracking
+        localStorage.setItem('last_shipping_country', shippingCountry);
+        localStorage.setItem('last_shipping_cost', shippingCost.toString());
+        
         // Clear cart before redirect
         clearCart();
         // Redirect to Stripe checkout - use window.top for iframe compatibility

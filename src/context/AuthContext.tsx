@@ -16,6 +16,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   accessToken: string | null;
+  getAccessToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -150,6 +151,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getAccessToken = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Session check error:', error);
+        return null;
+      }
+
+      if (session?.access_token) {
+        return session.access_token;
+      }
+    } catch (error) {
+      console.error('Error checking session:', error);
+      return null;
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -158,7 +177,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn, 
       signUp, 
       signOut,
-      accessToken 
+      accessToken,
+      getAccessToken
     }}>
       {children}
     </AuthContext.Provider>
