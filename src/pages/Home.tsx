@@ -121,7 +121,10 @@ export default function Home() {
           const resetData = await resetResponse.json();
           console.log('✅ Force reset successful:', resetData);
           localStorage.setItem('gorgonstone_force_reset_done', 'true');
-          setProducts(resetData.products || []);
+          
+          // Filter out hidden products for public view
+          const visibleProducts = (resetData.products || []).filter((p: any) => !p.hidden);
+          setProducts(visibleProducts);
           setLoading(false);
           return; // Exit early with the fresh products
         } else {
@@ -162,7 +165,11 @@ export default function Home() {
           return;
         }
         
-        setProducts(fetchedProducts);
+        // Filter out hidden products for public view
+        const visibleProducts = fetchedProducts.filter((p: any) => !p.hidden);
+        console.log('Visible products count:', visibleProducts.length);
+        
+        setProducts(visibleProducts);
       } else {
         console.error('Response not OK. Status:', response.status);
         const errorText = await response.text();

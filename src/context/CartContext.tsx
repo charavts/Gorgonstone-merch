@@ -12,6 +12,7 @@ export interface Product {
   stripeUrl: string;
   colors?: Color[];
   imageVariants?: Record<Color, string>;
+  hidden?: boolean; // Hide product from public view
   // Product details for single page
   material?: {
     en: string;

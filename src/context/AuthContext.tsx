@@ -163,6 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.access_token) {
         return session.access_token;
       }
+      
+      return null;
     } catch (error) {
       console.error('Error checking session:', error);
       return null;

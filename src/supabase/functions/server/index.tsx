@@ -632,7 +632,7 @@ function getDefaultSiteSettings() {
       'LV': { name: 'Λετονία', nameEn: 'Latvia', cost: 12.00 },
       'LT': { name: 'Λιθουανία', nameEn: 'Lithuania', cost: 12.00 },
       'LU': { name: 'Λουξεμβούργο', nameEn: 'Luxembourg', cost: 12.00 },
-      'MT': { name: 'Μάλτα', nameEn: 'Malta', cost: 12.00 },
+      'MT': { name: '��άλτα', nameEn: 'Malta', cost: 12.00 },
       'NL': { name: 'Ολλανδία', nameEn: 'Netherlands', cost: 12.00 },
       'PL': { name: 'Πολωνία', nameEn: 'Poland', cost: 12.00 },
       'PT': { name: 'Πορτογαλία', nameEn: 'Portugal', cost: 12.00 },
@@ -649,7 +649,7 @@ function getDefaultSiteSettings() {
       },
       el: {
         paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σ μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
-        paragraph2: 'Η βασική έμπνευση προέρχεται από τ��ν θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
+        paragraph2: 'Η βασική έμπνευση προέρχεται από τν θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
         paragraph3: 'Κάθε κομμάτι στοχεει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να μεταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.'
       }
     },
@@ -804,7 +804,12 @@ app.get("/make-server-deab0cbd/products", async (c) => {
     console.log("Fetching products from KV store...");
     const products = await kv.get('products');
     console.log("Products found:", products ? products.length : 0);
-    return c.json({ products: products || [] });
+    
+    // Filter out hidden products for public view
+    const visibleProducts = (products || []).filter((p: any) => !p.hidden);
+    console.log("Visible products:", visibleProducts.length);
+    
+    return c.json({ products: visibleProducts });
   } catch (error) {
     console.error("Get products error:", error.message);
     return c.json({ error: error.message }, 500);

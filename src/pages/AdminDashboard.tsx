@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Plus, Edit2, Trash2, Save, X, Upload, Loader } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Upload, Loader, XCircle, Eye, EyeOff } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { Product } from '../context/CartContext';
 
@@ -149,8 +149,8 @@ export default function AdminDashboard() {
   const handleSaveProduct = () => {
     if (!editingProduct) return;
 
-    if (!editingProduct.name || !editingProduct.price || !editingProduct.image) {
-      alert(language === 'el' ? 'Συμπληρώστε όλα τα υποχρεωτικά πεδία' : 'Fill all required fields');
+    if (!editingProduct.name || !editingProduct.price) {
+      alert(language === 'el' ? 'Συμπληρώστε όλα τα υποχρεωτικά πεδία (Όνομα και Τιμή)' : 'Fill all required fields (Name and Price)');
       return;
     }
 
@@ -169,6 +169,13 @@ export default function AdminDashboard() {
       const updatedProducts = products.filter(p => p.id !== id);
       saveProducts(updatedProducts);
     }
+  };
+
+  const handleToggleHideProduct = (id: string) => {
+    const updatedProducts = products.map(p => 
+      p.id === id ? { ...p, hidden: !p.hidden } : p
+    );
+    saveProducts(updatedProducts);
   };
 
   // Upload image function
@@ -294,7 +301,7 @@ export default function AdminDashboard() {
         setSiteSettings(updatedSettings);
         alert(
           language === 'el' 
-            ? '✅ Αποθηκεύτηκε επιτυχώς!\n\nΣημείωση: Κάντε refresh τη σελίδα Cart για να δείτε τις αλλαγές.' 
+            ? '✅ Αποθη��εύτηκε επιτυχώς!\n\nΣημείωση: Κάντε refresh τη σελίδα Cart για να δείτε τις αλλαγές.' 
             : '✅ Saved successfully!\n\nNote: Refresh the Cart page to see changes.'
         );
       } else {
@@ -433,7 +440,7 @@ export default function AdminDashboard() {
                 {/* Main Product Image */}
                 <div>
                   <label className="text-white mb-3 block">
-                    {language === 'el' ? 'Κύρια Εικόνα Προϊόντος' : 'Main Product Image'} *
+                    {language === 'el' ? 'Κύρια Εικόνα Προϊόντος' : 'Main Product Image'} <span className="text-white/50 text-sm">(optional)</span>
                   </label>
                   
                   {/* File Upload Button */}
@@ -464,9 +471,19 @@ export default function AdminDashboard() {
                   
                   {editingProduct?.image && (
                     <div className="mt-4 p-4 bg-[#444] rounded-lg">
-                      <p className="text-white/70 text-sm mb-2">
-                        {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
-                      </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-white/70 text-sm">
+                          {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
+                        </p>
+                        <button
+                          onClick={() => setEditingProduct(prev => prev ? {...prev, image: ''} : null)}
+                          className="flex items-center gap-1 text-red-400 hover:text-red-300 text-sm transition-colors"
+                          title={language === 'el' ? 'Αφαίρεση εικόνας' : 'Remove image'}
+                        >
+                          <XCircle size={16} />
+                          {language === 'el' ? 'Αφαίρεση' : 'Remove'}
+                        </button>
+                      </div>
                       <img 
                         src={editingProduct.image} 
                         alt="Product preview"
@@ -647,11 +664,33 @@ export default function AdminDashboard() {
                           />
                           
                           {editingProduct?.imageVariants?.[color] && (
-                            <img 
-                              src={editingProduct.imageVariants[color]} 
-                              alt={`${color} variant preview`}
-                              className={`mt-2 w-24 h-24 object-contain ${style.preview} rounded-lg border border-white/20`}
-                            />
+                            <div className="mt-3 p-3 bg-[#56514f] rounded-lg">
+                              <div className="flex items-center justify-between mb-2">
+                                <p className="text-white/70 text-xs">
+                                  {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
+                                </p>
+                                <button
+                                  onClick={() => {
+                                    const newVariants = {...(editingProduct?.imageVariants || {})};
+                                    delete newVariants[color];
+                                    setEditingProduct(prev => prev ? {
+                                      ...prev,
+                                      imageVariants: Object.keys(newVariants).length > 0 ? newVariants : undefined
+                                    } : null);
+                                  }}
+                                  className="flex items-center gap-1 text-red-400 hover:text-red-300 text-xs transition-colors"
+                                  title={language === 'el' ? 'Αφαίρεση εικόνας' : 'Remove image'}
+                                >
+                                  <XCircle size={14} />
+                                  {language === 'el' ? 'Αφαίρεση' : 'Remove'}
+                                </button>
+                              </div>
+                              <img 
+                                src={editingProduct.imageVariants[color]} 
+                                alt={`${color} variant preview`}
+                                className={`w-24 h-24 object-contain ${style.preview} rounded-lg border border-white/20`}
+                              />
+                            </div>
                           )}
                         </div>
                       );
@@ -659,7 +698,7 @@ export default function AdminDashboard() {
                     
                     <p className="text-white/50 text-sm">
                       {language === 'el' 
-                        ? '💡 Προσθέστε ξεχωριστή εικόνα για κάθε χρώμα.  εικόνα θα αλλάζει αυτόματα όταν ο πελάτης επιλέγει χρώμα.' 
+                        ? '💡 Προσθέστε ξεχωριστή εικόνα για κάθε χρώμα.  εικόνα θα αλλάζει αυτόματα ��ταν ο πελάτης επιλέγει χρώμα.' 
                         : '💡 Add a separate image for each color. The image will change automatically when customer selects a color.'
                       }
                     </p>
@@ -823,7 +862,7 @@ export default function AdminDashboard() {
                     <Save className="w-5 h-5" />
                     {saving 
                       ? (language === 'el' ? 'Αποθήκευση...' : 'Saving...') 
-                      : (language === 'el' ? 'Αποθήκευση' : 'Save')
+                      : (language === 'el' ? 'Αποθήκευ��η' : 'Save')
                     }
                   </button>
                   <button
@@ -883,7 +922,17 @@ export default function AdminDashboard() {
               </div>
             ) : (
               products.map((product) => (
-                <div key={product.id} className="bg-[#56514f] rounded-lg p-6 flex items-center gap-6">
+                <div 
+                  key={product.id} 
+                  className={`bg-[#56514f] rounded-lg p-6 flex items-center gap-6 relative ${
+                    product.hidden ? 'opacity-60 border-2 border-yellow-500/50' : ''
+                  }`}
+                >
+                  {product.hidden && (
+                    <div className="absolute top-3 right-3 bg-yellow-500/90 text-black px-3 py-1 rounded-full text-xs font-semibold">
+                      {language === 'el' ? 'ΚΡΥΦΟ' : 'HIDDEN'}
+                    </div>
+                  )}
                   {product.image && (
                     <img 
                       src={product.image} 
@@ -903,14 +952,30 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex gap-3">
                     <button
+                      onClick={() => handleToggleHideProduct(product.id)}
+                      className={`p-3 rounded-lg transition-colors cursor-pointer ${
+                        product.hidden 
+                          ? 'bg-green-500/20 hover:bg-green-500/30 text-green-300' 
+                          : 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300'
+                      }`}
+                      title={product.hidden 
+                        ? (language === 'el' ? 'Εμφάνιση προϊόντος' : 'Show product')
+                        : (language === 'el' ? 'Απόκρυψη προϊόντος' : 'Hide product')
+                      }
+                    >
+                      {product.hidden ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                    </button>
+                    <button
                       onClick={() => setEditingProduct(product)}
                       className="p-3 bg-[#444] hover:bg-[#555] rounded-lg text-white transition-colors cursor-pointer"
+                      title={language === 'el' ? 'Επεξεργασία' : 'Edit'}
                     >
                       <Edit2 className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product.id)}
                       className="p-3 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-300 transition-colors cursor-pointer"
+                      title={language === 'el' ? 'Διαγραφή' : 'Delete'}
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -1079,9 +1144,19 @@ export default function AdminDashboard() {
                       
                       {siteSettings.logoUrl && (
                         <div className="mt-4 p-4 bg-[#444] rounded-lg">
-                          <p className="text-white/70 text-sm mb-2">
-                            {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
-                          </p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white/70 text-sm">
+                              {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
+                            </p>
+                            <button
+                              onClick={() => setSiteSettings({ ...siteSettings, logoUrl: '' })}
+                              className="flex items-center gap-1 text-red-400 hover:text-red-300 text-sm transition-colors"
+                              title={language === 'el' ? 'Αφαίρεση logo' : 'Remove logo'}
+                            >
+                              <XCircle size={16} />
+                              {language === 'el' ? 'Αφαίρεση' : 'Remove'}
+                            </button>
+                          </div>
                           <img 
                             src={siteSettings.logoUrl} 
                             alt="Logo preview"

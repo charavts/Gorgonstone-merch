@@ -235,16 +235,18 @@ export default function ProductDetail() {
     );
   }
 
-  if (!product || !details) {
+  if (!product || !details || product.hidden) {
     return (
       <div className="pt-24 pb-40 px-5 text-center">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-white text-2xl mb-4">Product not found</h1>
+          <h1 className="text-white text-2xl mb-4">
+            {language === 'el' ? 'Το προϊόν δεν βρέθηκε' : 'Product not found'}
+          </h1>
           <button
             onClick={() => navigate('/')}
             className="bg-black hover:bg-[#444] text-white px-6 py-3 rounded-lg transition-colors cursor-pointer"
           >
-            Back to Home
+            {language === 'el' ? 'Επιστροφή στην Αρχική' : 'Back to Home'}
           </button>
         </div>
       </div>
