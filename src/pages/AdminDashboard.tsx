@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Plus, Edit2, Trash2, Save, X, Upload, Loader } from 'lucide-react';
-import { projectId } from '../utils/supabase/info';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { Product } from '../context/CartContext';
 
 export default function AdminDashboard() {
@@ -231,6 +231,20 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    console.log('📤 Uploading logo file:', file.name);
+    const url = await uploadImage(file, 'logo');
+    if (url) {
+      console.log('✅ Logo uploaded successfully:', url);
+      setSiteSettings({ ...siteSettings, logoUrl: url });
+    } else {
+      console.error('❌ Logo upload failed');
+    }
+  };
+
   const loadSiteSettings = async () => {
     setLoadingSettings(true);
     try {
@@ -416,6 +430,52 @@ export default function AdminDashboard() {
                   />
                 </div>
 
+                {/* Main Product Image */}
+                <div>
+                  <label className="text-white mb-3 block">
+                    {language === 'el' ? 'Κύρια Εικόνα Προϊόντος' : 'Main Product Image'} *
+                  </label>
+                  
+                  {/* File Upload Button */}
+                  <div className="flex gap-3 mb-3">
+                    <label className="flex items-center gap-2 bg-black hover:bg-[#444] text-white px-4 py-3 rounded-lg transition-colors cursor-pointer">
+                      {uploadingImages['main'] ? (
+                        <><Loader className="w-4 h-4 animate-spin" /> {language === 'el' ? 'Ανέβασμα...' : 'Uploading...'}</>
+                      ) : (
+                        <><Upload className="w-4 h-4" /> {language === 'el' ? 'Ανέβασε Εικόνα' : 'Upload Image'}</>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleMainImageUpload}
+                        className="hidden"
+                        disabled={uploadingImages['main']}
+                      />
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={editingProduct?.image || ''}
+                    onChange={(e) => setEditingProduct(prev => prev ? {...prev, image: e.target.value} : null)}
+                    className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                    placeholder={language === 'el' ? 'ή βάλε URL εικόνας' : 'or paste image URL'}
+                  />
+                  
+                  {editingProduct?.image && (
+                    <div className="mt-4 p-4 bg-[#444] rounded-lg">
+                      <p className="text-white/70 text-sm mb-2">
+                        {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
+                      </p>
+                      <img 
+                        src={editingProduct.image} 
+                        alt="Product preview"
+                        className="h-32 object-contain bg-white/10 rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+
                 {/* Colors Multi-Select */}
                 <div>
                   <label className="text-white mb-3 block">
@@ -496,7 +556,7 @@ export default function AdminDashboard() {
                   
                   <p className="text-white/50 text-sm mt-2">
                     {language === 'el' 
-                      ? 'Επίλεξε τα διαθέσιμα χρώματα για αυτό το προϊόν' 
+                      ? 'Επίλεξε τα διαθέσιμα ��ρώματα για αυτό το προϊόν' 
                       : 'Select available colors for this product'
                     }
                   </p>
@@ -599,7 +659,7 @@ export default function AdminDashboard() {
                     
                     <p className="text-white/50 text-sm">
                       {language === 'el' 
-                        ? '💡 Προσθέστε ξεχωριστή εικόνα για κάθε χρώμα. Η εικόνα θα αλλάζει αυτόματα όταν ο πελάτης επιλέγει χρώμα.' 
+                        ? '💡 Προσθέστε ξεχωριστή εικόνα για κάθε χρώμα.  εικόνα θα αλλάζει αυτόματα όταν ο πελάτης επιλέγει χρώμα.' 
                         : '💡 Add a separate image for each color. The image will change automatically when customer selects a color.'
                       }
                     </p>
@@ -670,7 +730,7 @@ export default function AdminDashboard() {
                     } : null)}
                     className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
                     rows={3}
-                    placeholder="Εντυπωσιακός σχεδιασμός..."
+                    placeholder="Εντυπωσιακός σχεδιασ��ός..."
                   />
                 </div>
 
@@ -710,7 +770,7 @@ export default function AdminDashboard() {
                     }}
                     className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
                     rows={4}
-                    placeholder="Απαλό και αναπνέον ύφασμα&#10;Ανθεκτική ποιότητα εκτύωσης&#10;Άνετη κανονική εφαρμογή"
+                    placeholder="Απαλό και αναπνέον ύφαμα&#10;Ανθεκτική ποιότητα εκτύωσης&#10;Άνετη κανονική εφαρμογή"
                   />
                 </div>
 
@@ -750,7 +810,7 @@ export default function AdminDashboard() {
                     }}
                     className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
                     rows={4}
-                    placeholder="Πλύσιμο σε κρύο νερό&#10;Στέγνωμα σε χαμηλή θερμοκρασία&#10;Μην σιδερώνετε το σχέδιο"
+                    placeholder="Πλύσιμο σε κρύο νερό&#10;Στέγνωμα σε χαμηλή θερμοκ��ασία&#10;Μην σιδερώνετε το σχέδιο"
                   />
                 </div>
 
@@ -784,6 +844,39 @@ export default function AdminDashboard() {
         {/* Products List */}
         {activeTab === 'products' && (
           <div className="grid gap-6">
+            {/* Reset Products Button */}
+            <div className="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-200 mb-1">
+                    {language === 'el' 
+                      ? '⚠️ Παλιές εικόνες GitHub URLs' 
+                      : '⚠️ Old GitHub URLs Images'
+                    }
+                  </p>
+                  <p className="text-blue-200/70 text-sm">
+                    {language === 'el' 
+                      ? 'Κάντε reset τα προϊόντα για να χρησιμοποιήσετε τις νέες placeholder εικόνες. Στη συνέχεια upload τις δικές σας εικόνες.'
+                      : 'Reset products to use new placeholder images. Then upload your own images.'
+                    }
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    if (confirm(language === 'el' 
+                      ? 'Θα διαγραφούν όλα τα προϊόντα και θα δημιουργηθούν νέα με placeholder εικόνες. Συνέχεια;'
+                      : 'This will delete all products and create new ones with placeholder images. Continue?'
+                    )) {
+                      await initializeProducts();
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  {language === 'el' ? '🔄 Reset Products' : '🔄 Reset Products'}
+                </button>
+              </div>
+            </div>
+
             {products.length === 0 ? (
               <div className="text-center text-white/70 py-12">
                 {language === 'el' ? 'Δεν υπάρχουν προϊόντα' : 'No products yet'}
@@ -933,6 +1026,109 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Logo Settings */}
+                <div className="bg-[#56514f] rounded-lg p-6">
+                  <h2 className="text-white text-2xl mb-6">
+                    {language === 'el' ? 'Ρυθμίσεις Logo' : 'Logo Settings'}
+                  </h2>
+
+                  {/* Info Banner */}
+                  <div className="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 mb-6">
+                    <p className="text-blue-200 text-sm">
+                      {language === 'el' 
+                        ? '💡 Για καλύτερα αποτελέσματα, κάντε upload το logo σας χρησιμοποιώντας το κουμπί "Ανέβασε Logo". Το GitHub raw URLs ίσως να μην λειτουργούν λόγω CORS restrictions.'
+                        : '💡 For best results, upload your logo using the "Upload Logo" button. GitHub raw URLs may not work due to CORS restrictions.'
+                      }
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-white mb-3 block">
+                        {language === 'el' ? 'Logo Εικόνα' : 'Logo Image'}
+                      </label>
+                      
+                      {/* File Upload Button */}
+                      <div className="flex gap-3 mb-3">
+                        <label className="flex items-center gap-2 bg-black hover:bg-[#444] text-white px-4 py-3 rounded-lg transition-colors cursor-pointer">
+                          {uploadingImages['logo'] ? (
+                            <><Loader className="w-4 h-4 animate-spin" /> {language === 'el' ? 'Ανέβασμα...' : 'Uploading...'}</>
+                          ) : (
+                            <><Upload className="w-4 h-4" /> {language === 'el' ? 'Ανέβασε Logo' : 'Upload Logo'}</>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleLogoUpload}
+                            className="hidden"
+                            disabled={uploadingImages['logo']}
+                          />
+                        </label>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={siteSettings.logoUrl || ''}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, logoUrl: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                        placeholder={language === 'el' ? 'ή βάλε URL logo' : 'or paste logo URL'}
+                      />
+                      
+                      {siteSettings.logoUrl && (
+                        <div className="mt-4 p-4 bg-[#444] rounded-lg">
+                          <p className="text-white/70 text-sm mb-2">
+                            {language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}
+                          </p>
+                          <img 
+                            src={siteSettings.logoUrl} 
+                            alt="Logo preview"
+                            className="h-16 object-contain"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => saveSiteSettings(siteSettings)}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-black hover:bg-[#444] text-white px-6 py-3 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-5 h-5" />
+                      {saving 
+                        ? (language === 'el' ? 'Αποθήκευση...' : 'Saving...') 
+                        : (language === 'el' ? 'Αποθήκευση' : 'Save Changes')
+                      }
+                    </button>
+
+                    {/* Debug Button */}
+                    <button
+                      onClick={async () => {
+                        console.log('🔍 DEBUG: Current siteSettings in state:', siteSettings);
+                        
+                        // Fetch from backend to see what's actually stored
+                        const response = await fetch(
+                          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/site-settings`,
+                          {
+                            headers: {
+                              'Authorization': `Bearer ${publicAnonKey}`,
+                            },
+                          }
+                        );
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          console.log('🔍 DEBUG: Settings from backend:', data.settings);
+                          console.log('🔍 DEBUG: Logo URL from backend:', data.settings?.logoUrl);
+                          alert(`Logo URL: ${data.settings?.logoUrl || 'NOT SET'}`);
+                        }
+                      }}
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer text-sm"
+                    >
+                      {language === 'el' ? '🔍 Debug Info' : '🔍 Debug Info'}
+                    </button>
                   </div>
                 </div>
 

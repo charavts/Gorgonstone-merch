@@ -179,39 +179,39 @@ export default function ProductDetail() {
     }
   };
 
-  // Fallback products
+  // Fallback products with Unsplash placeholder images
   const fallbackProducts: Product[] = [
     {
       id: '1',
       name: 'Black T-shirt Split Stone Face',
       price: 28,
-      image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Black%20T-shirt%20Split%20Stone%20Face.png',
+      image: 'https://images.unsplash.com/photo-1711641066085-5236bf7afcd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTcyNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
       stripeUrl: 'https://buy.stripe.com/test_fZu14p84Vd7Oeyk3Of00004'
     },
     {
       id: '2',
       name: 'Medusa Mask T-shirt',
       price: 28,
-      image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Medusa%20Mask%20T-shirt%20White.png',
+      image: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTUwMzI1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
       stripeUrl: 'https://buy.stripe.com/28E8wQ3yl8hF5476ob2Nq02'
     },
     {
       id: '5',
       name: 'Gorgonstone Sweatshirt',
       price: 36,
-      image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Sweatshirt%20Black.png',
+      image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
       stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03'
     },
     {
       id: '3',
       name: 'Ammon Horns Medusa Hoodie',
       price: 40,
-      image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
+      image: 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
       stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00',
       colors: ['Black', 'White'],
       imageVariants: {
-        'Black': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
-        'White': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20White.png'
+        'Black': 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+        'White': 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
       }
     }
   ];

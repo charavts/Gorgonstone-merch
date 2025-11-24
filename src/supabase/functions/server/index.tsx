@@ -49,7 +49,7 @@ app.post("/make-server-deab0cbd/init-products", async (c) => {
         name: 'Black T-shirt Split Stone Face',
         nameEl: 'Μαύρ T-shirt Split Stone Face',
         price: 28,
-        image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Black%20T-shirt%20Split%20Stone%20Face.png',
+        image: 'https://images.unsplash.com/photo-1711641066085-5236bf7afcd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTcyNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         stripeUrl: 'https://buy.stripe.com/test_fZu14p84Vd7Oeyk3Of00004',
         material: {
           en: '100% Premium Cotton',
@@ -73,7 +73,7 @@ app.post("/make-server-deab0cbd/init-products", async (c) => {
         name: 'Medusa Mask T-shirt',
         nameEl: 'T-shirt Μάσκα Μέδουσας',
         price: 28,
-        image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Medusa%20Mask%20T-shirt%20White.png',
+        image: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTUwMzI1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         stripeUrl: 'https://buy.stripe.com/28E8wQ3yl8hF5476ob2Nq02',
         material: {
           en: '100% Premium Cotton',
@@ -97,7 +97,7 @@ app.post("/make-server-deab0cbd/init-products", async (c) => {
         name: 'Gorgonstone Sweatshirt',
         nameEl: 'Gorgonstone Φούτερ',
         price: 36,
-        image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Sweatshirt%20Black.png',
+        image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03',
         material: {
           en: '80% Cotton, 20% Polyester',
@@ -121,12 +121,12 @@ app.post("/make-server-deab0cbd/init-products", async (c) => {
         name: 'Ammon Horns Medusa Hoodie',
         nameEl: 'Ammon Horns Medusa Hoodie',
         price: 40,
-        image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
+        image: 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00',
         colors: ['Black', 'White'],
         imageVariants: {
-          'Black': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
-          'White': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20White.png'
+          'Black': 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+          'White': 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
         },
         material: {
           en: '80% Cotton, 20% Polyester',
@@ -153,6 +153,102 @@ app.post("/make-server-deab0cbd/init-products", async (c) => {
     return c.json({ success: true, count: initialProducts.length, products: initialProducts });
   } catch (error) {
     console.error("Init products error:", error.message);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Force clear and reinitialize products (public endpoint for testing)
+app.post("/make-server-deab0cbd/force-reset-products", async (c) => {
+  try {
+    console.log("Force reset products requested...");
+    
+    // Clear existing products first
+    await kv.del('products');
+    console.log("Existing products cleared");
+    
+    const initialProducts = [
+      {
+        id: '1',
+        name: 'Black T-shirt Split Stone Face',
+        nameEl: 'Μαύρο T-shirt Split Stone Face',
+        price: 28,
+        image: 'https://images.unsplash.com/photo-1711641066085-5236bf7afcd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTcyNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+        stripeUrl: 'https://buy.stripe.com/test_fZu14p84Vd7Oeyk3Of00004',
+        material: {
+          en: '100% Premium Cotton',
+          el: '100% Εκλεκτό Βαμβάκι'
+        },
+        description: {
+          en: 'A striking design featuring a split stone face inspired by ancient mythology.',
+          el: 'Εντυπωσιακός σχεδιασμός με διχασμένο πέτρινο πρόσωπο εμπνευσμένο από την αρχαία μυθολογία.'
+        }
+      },
+      {
+        id: '2',
+        name: 'Medusa Mask T-shirt',
+        nameEl: 'T-shirt Μάσκα Μέδουσας',
+        price: 28,
+        image: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMHQtc2hpcnR8ZW58MXx8fHwxNzYzOTUwMzI1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+        stripeUrl: 'https://buy.stripe.com/28E8wQ3yl8hF5476ob2Nq02',
+        material: {
+          en: '100% Premium Cotton',
+          el: '100% Εκλεκτό Βαμβάκι'
+        },
+        description: {
+          en: 'Featuring the iconic Medusa mask design.',
+          el: 'Με το εμβληματικό σχέδιο της μάσκας της Μέδουσας.'
+        }
+      },
+      {
+        id: '5',
+        name: 'Gorgonstone Sweatshirt',
+        nameEl: 'Gorgonstone Φούτερ',
+        price: 36,
+        image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+        stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03',
+        material: {
+          en: '80% Cotton, 20% Polyester',
+          el: '80% Βαμβάκι, 20% Πολυεστέρας'
+        },
+        description: {
+          en: 'Classic crewneck sweatshirt with premium cotton blend.',
+          el: 'Κλασική μπλούζα με στρογγυλή λαιμόκοψη και εκλεκτό μείγμα βαμβακιού.'
+        }
+      },
+      {
+        id: '3',
+        name: 'Ammon Horns Medusa Hoodie',
+        nameEl: 'Ammon Horns Medusa Hoodie',
+        price: 40,
+        image: 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+        stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00',
+        colors: ['Black', 'White'],
+        imageVariants: {
+          'Black': 'https://images.unsplash.com/photo-1647797819874-f51a8a8fc5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMGhvb2RpZXxlbnwxfHx8fDE3NjM5NTI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+          'White': 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
+        },
+        material: {
+          en: '80% Cotton, 20% Polyester',
+          el: '80% Βαμβάκι, 20% Πολυεστέρας'
+        },
+        description: {
+          en: 'Premium quality hoodie with exceptional comfort.',
+          el: 'Φούτερ υψηλής ποιότητας με εξαιρετική άνεση.'
+        }
+      }
+    ];
+
+    await kv.set('products', initialProducts);
+    
+    console.log("✅ Products force reset successfully with Unsplash images!");
+    return c.json({ 
+      success: true, 
+      message: 'Products cleared and reinitialized with Unsplash images',
+      count: initialProducts.length, 
+      products: initialProducts 
+    });
+  } catch (error) {
+    console.error("Force reset products error:", error.message);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -499,6 +595,8 @@ app.post("/make-server-deab0cbd/admin/site-settings", async (c) => {
 app.get("/make-server-deab0cbd/site-settings", async (c) => {
   try {
     const settings = await kv.get('site_settings');
+    console.log('📡 Public site-settings endpoint called');
+    console.log('📦 Settings from KV store:', JSON.stringify(settings, null, 2));
     return c.json({ settings: settings || getDefaultSiteSettings() });
   } catch (error) {
     console.error("Get site settings error:", error.message);
@@ -525,7 +623,7 @@ function getDefaultSiteSettings() {
       'BE': { name: 'Βέλγιο', nameEn: 'Belgium', cost: 12.00 },
       'BG': { name: 'Βουλγαρία', nameEn: 'Bulgaria', cost: 12.00 },
       'HR': { name: 'Κροατία', nameEn: 'Croatia', cost: 12.00 },
-      'CZ': { name: 'Τσεχία', nameEn: 'Czech Republic', cost: 12.00 },
+      'CZ': { name: 'Τ��εχία', nameEn: 'Czech Republic', cost: 12.00 },
       'DK': { name: 'Δανία', nameEn: 'Denmark', cost: 12.00 },
       'EE': { name: 'Εσθονία', nameEn: 'Estonia', cost: 12.00 },
       'FI': { name: 'Φινλανδία', nameEn: 'Finland', cost: 12.00 },
@@ -550,12 +648,12 @@ function getDefaultSiteSettings() {
         paragraph3: 'Every piece aims to bring the spirit of antiquity into the present, allowing wearers to carry fragments of myth, sculpture, and history as living forms of art.'
       },
       el: {
-        paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σε μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
-        paragraph2: 'Η βασική έμπνευση προέρχεται από τον θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θολής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
-        paragraph3: 'Κάθε κομμάτι στοχεύει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να μεταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.'
+        paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σ μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
+        paragraph2: 'Η βασική έμπνευση προέρχεται από τον θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
+        paragraph3: 'Κάθε κομμάτι στοχεει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να μεταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.'
       }
     },
-    logoUrl: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/logo.png'
+    logoUrl: '' // No default logo - will show "GORGONSTONE" text until admin uploads a logo
   };
 }
 

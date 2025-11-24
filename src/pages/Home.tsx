@@ -1,61 +1,137 @@
-import { useCart } from '../context/CartContext';
-import { Product } from '../context/CartContext';
-import ProductCard from '../components/ProductCard';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { products as productList } from '../data/products';
 import { useState, useEffect } from 'react';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { useLanguage } from '../context/LanguageContext';
+import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-
-// Fallback products in case backend is not available
-const fallbackProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Black T-shirt Split Stone Face',
-    price: 28,
-    image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Black%20T-shirt%20Split%20Stone%20Face.png',
-    stripeUrl: 'https://buy.stripe.com/test_fZu14p84Vd7Oeyk3Of00004'
-  },
-  {
-    id: '2',
-    name: 'Medusa Mask T-shirt',
-    price: 28,
-    image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/Medusa%20Mask%20T-shirt%20White.png',
-    stripeUrl: 'https://buy.stripe.com/28E8wQ3yl8hF5476ob2Nq02'
-  },
-  {
-    id: '5',
-    name: 'Gorgonstone Sweatshirt',
-    price: 36,
-    image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Sweatshirt%20Black.png',
-    stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03'
-  },
-  {
-    id: '3',
-    name: 'Ammon Horns Medusa Hoodie',
-    price: 40,
-    image: 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
-    stripeUrl: 'https://buy.stripe.com/3cIaEYecZapN7cf9An2Nq00',
-    colors: ['Black', 'White'],
-    imageVariants: {
-      'Black': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20Black.png',
-      'White': 'https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/High-Quality%20Cotton%20Hoodie%20White.png'
-    }
-  }
-];
+import ProductCard from '../components/ProductCard';
 
 export default function Home() {
+  const { t, language } = useLanguage();
   const { addToCart } = useCart();
-  const [products, setProducts] = useState<Product[]>(fallbackProducts); // Initialize with fallback products
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [logoUrl, setLogoUrl] = useState('');
+  const [autoFixAttempted, setAutoFixAttempted] = useState(false);
+  const [isAutoFixing, setIsAutoFixing] = useState(false);
+  
   useEffect(() => {
     loadProducts();
+    loadLogo();
   }, []);
+
+  // Auto-fix: Automatically reset products if GitHub URLs are detected (runs once)
+  useEffect(() => {
+    if (!loading && !autoFixAttempted && products.length > 0) {
+      const hasGitHubUrls = products.some(p => p.image && p.image.includes('github.com'));
+      
+      if (hasGitHubUrls) {
+        console.log('🚨 AUTO-FIX: GitHub URLs detected, forcing reset automatically...');
+        setAutoFixAttempted(true); // Prevent infinite loop
+        setIsAutoFixing(true);
+        
+        // Automatically call force reset
+        fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/force-reset-products`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+            },
+          }
+        )
+          .then(response => {
+            if (response.ok) {
+              console.log('✅ AUTO-FIX: Products reset successfully, reloading...');
+              // Wait 1 second then reload
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            } else {
+              console.error('❌ AUTO-FIX: Failed to reset products');
+              setIsAutoFixing(false);
+            }
+          })
+          .catch(error => {
+            console.error('❌ AUTO-FIX: Error resetting products:', error);
+            setIsAutoFixing(false);
+          });
+      }
+    }
+  }, [loading, products, autoFixAttempted]);
+
+  const loadLogo = async () => {
+    try {
+      console.log('🔍 Loading logo from backend...');
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/site-settings`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+      
+      console.log('Logo fetch response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Site settings data:', data);
+        console.log('Logo URL from settings:', data.settings?.logoUrl);
+        
+        if (data.settings?.logoUrl) {
+          console.log('✅ Setting logo URL to:', data.settings.logoUrl);
+          setLogoUrl(data.settings.logoUrl);
+        } else {
+          console.log('⚠️ No logoUrl in settings, using default');
+        }
+      } else {
+        console.error('❌ Failed to load logo, status:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error loading logo:', error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
       console.log('Loading products from:', `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/products`);
       
-      // First, try to get products from public endpoint (no auth required)
+      // Check if we already did the force reset (using localStorage)
+      const forceResetDone = localStorage.getItem('gorgonstone_force_reset_done');
+      
+      // IMPORTANT: Force reset products FIRST to ensure we have Unsplash images
+      // Only do this once (or if not done yet)
+      if (!forceResetDone) {
+        console.log('🚀 FIRST TIME: Force resetting products to clear any GitHub URLs...');
+        const resetResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/force-reset-products`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+            },
+          }
+        );
+        
+        if (resetResponse.ok) {
+          const resetData = await resetResponse.json();
+          console.log('✅ Force reset successful:', resetData);
+          localStorage.setItem('gorgonstone_force_reset_done', 'true');
+          setProducts(resetData.products || []);
+          setLoading(false);
+          return; // Exit early with the fresh products
+        } else {
+          console.log('⚠️ Force reset failed, falling back to normal fetch');
+        }
+      } else {
+        console.log('✅ Force reset already done, using normal fetch');
+      }
+      
+      // Normal fetch after first reset or if reset failed
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/products`,
         {
@@ -74,27 +150,32 @@ export default function Home() {
         const fetchedProducts = data.products || [];
         console.log('Fetched products count:', fetchedProducts.length);
         
-        // If no products exist, initialize them
-        if (fetchedProducts.length === 0) {
-          console.log('No products found, initializing...');
-          await initializeProducts();
-        } else {
-          console.log('Setting products:', fetchedProducts);
-          setProducts(fetchedProducts);
+        // Double-check for GitHub URLs even after localStorage says it's done
+        const hasGitHubUrls = fetchedProducts.some((p: any) => 
+          p.image && p.image.includes('github.com')
+        );
+        
+        if (hasGitHubUrls) {
+          console.log('⚠️ GitHub URLs still found! Forcing reset again...');
+          localStorage.removeItem('gorgonstone_force_reset_done');
+          window.location.reload();
+          return;
         }
+        
+        setProducts(fetchedProducts);
       } else {
         console.error('Response not OK. Status:', response.status);
         const errorText = await response.text();
         console.error('Error response:', errorText);
         // Use fallback products if endpoint fails
         console.log('Using fallback products');
-        setProducts(fallbackProducts);
+        setProducts(productList);
       }
     } catch (error) {
       console.error('Error loading products:', error);
       // Fallback to hardcoded products if backend fails
       console.log('Using fallback products due to error');
-      setProducts(fallbackProducts);
+      setProducts(productList);
     } finally {
       setLoading(false);
     }
@@ -102,9 +183,11 @@ export default function Home() {
 
   const initializeProducts = async () => {
     try {
-      console.log('Initializing products from backend...');
+      console.log('🔧 Force resetting products with new Unsplash images...');
+      
+      // Use force-reset endpoint instead of init-products for more aggressive fix
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/init-products`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/force-reset-products`,
         {
           method: 'POST',
           headers: {
@@ -114,21 +197,21 @@ export default function Home() {
         }
       );
 
-      console.log('Init products response status:', response.status);
+      console.log('Force reset response status:', response.status);
       const responseText = await response.text();
-      console.log('Init products response:', responseText);
+      console.log('Force reset response:', responseText);
 
       if (response.ok) {
         const data = JSON.parse(responseText);
-        console.log('Products initialized successfully:', data);
-        setProducts(data.products || []);
+        console.log('✅ Products force reset successfully:', data);
+        return data.products || [];
       } else {
-        console.error('Failed to initialize products. Status:', response.status, 'Response:', responseText);
-        setProducts(fallbackProducts);
+        console.error('Failed to force reset products. Status:', response.status, 'Response:', responseText);
+        return productList;
       }
     } catch (error) {
-      console.error('Error initializing products:', error);
-      setProducts(fallbackProducts);
+      console.error('Error force resetting products:', error);
+      return productList;
     }
   };
 
@@ -139,13 +222,62 @@ export default function Home() {
         <div className="py-0">
           <div className="max-w-[320px] mx-auto px-5 flex justify-center">
             <ImageWithFallback
-              src="https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/logo.png"
+              src={logoUrl}
               alt="Gorgonstone Logo"
               className="w-[300px] max-w-[80vw] h-auto opacity-90"
             />
           </div>
         </div>
       </div>
+
+      {/* Debug: Force Reset Button (Click ONCE to fix images) */}
+      {products.some(p => p.image && p.image.includes('github.com')) && !isAutoFixing && (
+        <div className="max-w-4xl mx-auto mb-8 bg-yellow-500/10 border-2 border-yellow-500/50 rounded-lg p-6">
+          <p className="text-yellow-200 mb-3 text-center">
+            ⚠️ Old GitHub URLs detected! Click below to fix images:
+          </p>
+          <button
+            onClick={async () => {
+              console.log('🔧 Force resetting products...');
+              try {
+                const response = await fetch(
+                  `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/force-reset-products`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${publicAnonKey}`,
+                    },
+                  }
+                );
+                if (response.ok) {
+                  console.log('✅ Products reset successfully!');
+                  // Reload the page
+                  window.location.reload();
+                } else {
+                  console.error('❌ Failed to reset products');
+                }
+              } catch (error) {
+                console.error('❌ Error resetting products:', error);
+              }
+            }}
+            className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg transition-colors cursor-pointer"
+          >
+            🔄 Fix Images Now (Click Once)
+          </button>
+        </div>
+      )}
+
+      {/* Auto-Fixing Banner */}
+      {isAutoFixing && (
+        <div className="max-w-4xl mx-auto mb-8 bg-green-500/10 border-2 border-green-500/50 rounded-lg p-6">
+          <div className="flex items-center justify-center gap-3">
+            <div className="animate-spin w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full"></div>
+            <p className="text-green-200 text-center">
+              🔧 Auto-fixing images... Page will reload in a moment...
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {loading && (

@@ -1,17 +1,67 @@
-import { useLanguage } from '../context/LanguageContext';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { useLanguage } from '../context/LanguageContext';
+import { useState, useEffect } from 'react';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 export default function Info() {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
+  const [logoUrl, setLogoUrl] = useState('');
+  const [aboutContent, setAboutContent] = useState({ en: { paragraph1: '', paragraph2: '', paragraph3: '' }, el: { paragraph1: '', paragraph2: '', paragraph3: '' } });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAboutContent();
+  }, []);
+
+  const loadAboutContent = async () => {
+    try {
+      console.log('🔍 [Info] Loading site settings...');
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/site-settings`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+      
+      console.log('[Info] Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Info] Site settings data:', data);
+        
+        if (data.settings) {
+          if (data.settings.logoUrl) {
+            console.log('✅ [Info] Logo URL found:', data.settings.logoUrl);
+            setLogoUrl(data.settings.logoUrl);
+          } else {
+            console.log('⚠️ [Info] No logoUrl in settings');
+          }
+          if (data.settings.aboutContent) {
+            setAboutContent(data.settings.aboutContent);
+          }
+        }
+      } else {
+        console.error('❌ [Info] Failed to load settings, status:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ [Info] Error loading about content:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const content = language === 'el' ? aboutContent.el : aboutContent.en;
 
   return (
-    <main className="pt-24 pb-40 px-5">{/* Increased bottom padding from pb-8 to pb-40 to match Home and Contact pages */}
+    <main className="pt-24 pb-40 px-5 min-h-screen">
       {/* Logo Section */}
       <div className="mb-3">
         <div className="py-0">
           <div className="max-w-[320px] mx-auto px-5 flex justify-center">
             <ImageWithFallback
-              src="https://raw.githubusercontent.com/charavts/Gorgonstone-merch/main/src/public/logo.png"
+              src={logoUrl}
               alt="Gorgonstone Logo"
               className="w-[300px] max-w-[80vw] h-auto opacity-90"
             />
@@ -28,28 +78,20 @@ export default function Info() {
         {/* Text section */}
         <div className="bg-[#56514f] rounded-lg p-8">
           <div className="text-white space-y-4">
-            {language === 'el' ? (
-              <>
-                <p className="text-white/90 leading-relaxed">
-                  Αυτό το art-driven T-shirt project βασίζεται σε μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.
-                </p>
-                <p className="text-white/90 leading-relaxed">
-                  Η βασική έμπνευση προέρχεται από τον θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θολής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.
-                </p>
-                <p className="text-white/90 leading-relaxed">
-                  Κάθε κομμάτι στοχεύει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να εταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.
-                </p>
-              </>
+            {loading ? (
+              <p className="text-white/90 leading-relaxed">
+                {t('loading')}
+              </p>
             ) : (
               <>
                 <p className="text-white/90 leading-relaxed">
-                  This art-driven T-shirt project is built on a deep sensitivity toward the aesthetics, history, and cultural power of the ancient world. Each design draws inspiration from the myths, heroes, and daemons that shaped early civilizations, celebrating the timeless connection between storytelling and visual art.
+                  {content.paragraph1}
                 </p>
                 <p className="text-white/90 leading-relaxed">
-                  The core inspiration comes from the legendary tale of Perseus and Medusa—an eternal symbol of courage, transformation, and the blurred line between monster and myth. Along with the broader era of heroes, these narratives fuel a collection that merges ancient symbolism with modern expression.
+                  {content.paragraph2}
                 </p>
                 <p className="text-white/90 leading-relaxed">
-                  Every piece aims to bring the spirit of antiquity into the present, allowing wearers to carry fragments of myth, sculpture, and history as living forms of art.
+                  {content.paragraph3}
                 </p>
               </>
             )}
