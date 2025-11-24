@@ -36,7 +36,7 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json();
         if (data.settings?.logoUrl) {
-          console.log('✅ Setting logo URL to:', data.settings.logoUrl);
+          console.log('�� Setting logo URL to:', data.settings.logoUrl);
           setLogoUrl(data.settings.logoUrl);
         }
       } else {
@@ -108,7 +108,7 @@ export default function Home() {
 
       {/* Products Grid */}
       {!loading && (
-        <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 max-w-7xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 max-w-7xl mx-auto">
           {products.length === 0 ? (
             <div className="text-center text-white/60 py-12 w-full">
               {language === 'el' ? 'Δεν βρέθηκαν προϊόντα' : 'No products found'}
