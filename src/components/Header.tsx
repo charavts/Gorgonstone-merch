@@ -1,12 +1,22 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Languages } from 'lucide-react';
+import { ShoppingCart, Languages, User, LogOut, Settings } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
   const { getCartCount } = useCart();
   const { language, toggleLanguage, t } = useLanguage();
+  const { user, isAdmin, signOut } = useAuth();
   const cartCount = getCartCount();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full bg-[#333] text-white z-50">
@@ -39,6 +49,35 @@ export default function Header() {
             <Languages size={18} className="sm:w-5 sm:h-5" />
             <span className="font-semibold">{language === 'el' ? 'GR' : 'EN'}</span>
           </button>
+
+          {/* Admin Dashboard Button */}
+          {isAdmin && (
+            <Link to="/admin">
+              <button className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-4 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base cursor-pointer">
+                <Settings size={18} className="sm:w-5 sm:h-5" />
+                <span className="hidden md:inline">Admin</span>
+              </button>
+            </Link>
+          )}
+
+          {/* User Menu */}
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-4 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base cursor-pointer"
+              title={language === 'el' ? 'Αποσύνδεση' : 'Sign Out'}
+            >
+              <LogOut size={18} className="sm:w-5 sm:h-5" />
+              <span className="hidden md:inline">{user.name}</span>
+            </button>
+          ) : (
+            <Link to="/login">
+              <button className="bg-[#444] hover:bg-[#555] text-white px-2 sm:px-4 py-2 rounded transition-colors flex items-center gap-1 sm:gap-2 text-sm sm:text-base cursor-pointer">
+                <User size={18} className="sm:w-5 sm:h-5" />
+                <span className="hidden md:inline">{language === 'el' ? 'Σύνδεση' : 'Login'}</span>
+              </button>
+            </Link>
+          )}
 
           {/* Cart Button */}
           <Link to="/cart" className="relative">

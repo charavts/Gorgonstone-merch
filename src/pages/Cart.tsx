@@ -3,7 +3,7 @@ import { Trash2, Plus, Minus, ShoppingBag, Globe } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { Link } from 'react-router-dom';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Cart() {
@@ -11,12 +11,98 @@ export default function Cart() {
   const [isLoading, setIsLoading] = useState(false);
   const { t, language } = useLanguage();
   const [shippingCountry, setShippingCountry] = useState('GR');
+  const [shippingCosts, setShippingCosts] = useState<Record<string, any>>({
+    // Default fallback countries
+    'GR': { name: 'Ελλάδα', nameEn: 'Greece', cost: 3.50 },
+    'CY': { name: 'Κύπρος', nameEn: 'Cyprus', cost: 7.00 },
+    'IT': { name: 'Ιταλία', nameEn: 'Italy', cost: 12.00 },
+    'ES': { name: 'Ισπανία', nameEn: 'Spain', cost: 12.00 },
+    'FR': { name: 'Γαλλία', nameEn: 'France', cost: 12.00 },
+    'DE': { name: 'Γερμανία', nameEn: 'Germany', cost: 12.00 },
+  });
+  const [loadingSettings, setLoadingSettings] = useState(true);
+
+  // Load shipping costs from site settings
+  useEffect(() => {
+    const loadShippingCosts = async () => {
+      try {
+        console.log('Loading shipping costs from API...');
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/site-settings`,
+          {
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+            },
+          }
+        );
+        
+        console.log('API response status:', response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API response data:', data);
+          
+          if (data.settings?.shippingCosts) {
+            console.log('Shipping costs loaded:', data.settings.shippingCosts);
+            setShippingCosts(data.settings.shippingCosts);
+          } else {
+            console.log('No shipping costs in response, using defaults');
+          }
+        } else {
+          console.error('API response not OK:', response.status);
+          const errorText = await response.text();
+          console.error('Error details:', errorText);
+        }
+      } catch (error) {
+        console.error('Error loading shipping costs:', error);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+
+    loadShippingCosts();
+  }, []);
+
+  // Manual refresh function for testing
+  const refreshShippingCosts = async () => {
+    setLoadingSettings(true);
+    try {
+      console.log('🔄 Manually refreshing shipping costs...');
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/site-settings`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Refreshed shipping costs:', data.settings?.shippingCosts);
+        
+        if (data.settings?.shippingCosts) {
+          setShippingCosts(data.settings.shippingCosts);
+          alert(language === 'el' ? 'Τιμές ενημερώθηκαν!' : 'Prices updated!');
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('Refresh error:', response.status, errorText);
+        alert(language === 'el' ? 'Σφάλμα ανανέωσης' : 'Refresh error');
+      }
+    } catch (error) {
+      console.error('Error refreshing:', error);
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
 
   // Calculate shipping cost based on country
   const getShippingCost = () => {
-    if (shippingCountry === 'GR') return 3.50;
-    if (shippingCountry === 'CY') return 7.00;
-    return 12.00; // All other countries
+    if (!shippingCosts[shippingCountry]) {
+      return 12.00; // Default fallback
+    }
+    return shippingCosts[shippingCountry].cost;
   };
 
   const shippingCost = getShippingCost();
@@ -193,54 +279,15 @@ export default function Cart() {
               onChange={(e) => setShippingCountry(e.target.value)}
               className="w-full bg-[#56514f] text-white border border-white/20 rounded-lg px-4 py-3 focus:outline-none focus:border-white/40 transition-colors"
             >
-              <option value="GR">{language === 'el' ? 'Ελλάδα' : 'Greece'} - 3.50€</option>
-              <option value="CY">{language === 'el' ? 'Κύπρος' : 'Cyprus'} - 7.00€</option>
-              <option value="AL">{language === 'el' ? 'Αλβανία' : 'Albania'} - 12.00€</option>
-              <option value="AD">{language === 'el' ? 'Ανδόρρα' : 'Andorra'} - 12.00€</option>
-              <option value="AT">{language === 'el' ? 'Αυστρία' : 'Austria'} - 12.00€</option>
-              <option value="BY">{language === 'el' ? 'Λευκορωσία' : 'Belarus'} - 12.00€</option>
-              <option value="BE">{language === 'el' ? 'Βέλγιο' : 'Belgium'} - 12.00€</option>
-              <option value="BA">{language === 'el' ? 'Βοσνία-Ερζεγοβίνη' : 'Bosnia and Herzegovina'} - 12.00€</option>
-              <option value="BG">{language === 'el' ? 'Βουλγαρία' : 'Bulgaria'} - 12.00€</option>
-              <option value="HR">{language === 'el' ? 'Κροατία' : 'Croatia'} - 12.00€</option>
-              <option value="CZ">{language === 'el' ? 'Τσεχία' : 'Czech Republic'} - 12.00€</option>
-              <option value="DK">{language === 'el' ? 'Δανία' : 'Denmark'} - 12.00€</option>
-              <option value="EE">{language === 'el' ? 'Εσθονία' : 'Estonia'} - 12.00€</option>
-              <option value="FI">{language === 'el' ? 'Φινλανδία' : 'Finland'} - 12.00€</option>
-              <option value="FR">{language === 'el' ? 'Γαλλία' : 'France'} - 12.00€</option>
-              <option value="DE">{language === 'el' ? 'Γερμανία' : 'Germany'} - 12.00€</option>
-              <option value="HU">{language === 'el' ? 'Ουγγαρία' : 'Hungary'} - 12.00€</option>
-              <option value="IS">{language === 'el' ? 'Ισλανδία' : 'Iceland'} - 12.00€</option>
-              <option value="IE">{language === 'el' ? 'Ιρλανδία' : 'Ireland'} - 12.00€</option>
-              <option value="IT">{language === 'el' ? 'Ιταλία' : 'Italy'} - 12.00€</option>
-              <option value="XK">{language === 'el' ? 'Κοσσυφοπέδιο' : 'Kosovo'} - 12.00€</option>
-              <option value="LV">{language === 'el' ? 'Λετονία' : 'Latvia'} - 12.00€</option>
-              <option value="LI">{language === 'el' ? 'Λιχτενστάιν' : 'Liechtenstein'} - 12.00€</option>
-              <option value="LT">{language === 'el' ? 'Λιθουανία' : 'Lithuania'} - 12.00€</option>
-              <option value="LU">{language === 'el' ? 'Λουξεμβούργο' : 'Luxembourg'} - 12.00€</option>
-              <option value="MT">{language === 'el' ? 'Μάλτα' : 'Malta'} - 12.00€</option>
-              <option value="MD">{language === 'el' ? 'Μολδαβία' : 'Moldova'} - 12.00€</option>
-              <option value="MC">{language === 'el' ? 'Μονακό' : 'Monaco'} - 12.00€</option>
-              <option value="ME">{language === 'el' ? 'Μαυροβούνιο' : 'Montenegro'} - 12.00€</option>
-              <option value="NL">{language === 'el' ? 'Ολλανδία' : 'Netherlands'} - 12.00€</option>
-              <option value="MK">{language === 'el' ? 'Βόρεια Μακεδονία' : 'North Macedonia'} - 12.00€</option>
-              <option value="NO">{language === 'el' ? 'Νορβηγία' : 'Norway'} - 12.00€</option>
-              <option value="PL">{language === 'el' ? 'Πολωνία' : 'Poland'} - 12.00€</option>
-              <option value="PT">{language === 'el' ? 'Πορτογαλία' : 'Portugal'} - 12.00€</option>
-              <option value="RO">{language === 'el' ? 'Ρουμανία' : 'Romania'} - 12.00€</option>
-              <option value="RU">{language === 'el' ? 'Ρωσία' : 'Russia'} - 12.00€</option>
-              <option value="SM">{language === 'el' ? 'Άγιος Μαρίνος' : 'San Marino'} - 12.00€</option>
-              <option value="RS">{language === 'el' ? 'Σερβία' : 'Serbia'} - 12.00€</option>
-              <option value="SK">{language === 'el' ? 'Σλοβακία' : 'Slovakia'} - 12.00€</option>
-              <option value="SI">{language === 'el' ? 'Σλοβενία' : 'Slovenia'} - 12.00€</option>
-              <option value="ES">{language === 'el' ? 'Ισπανία' : 'Spain'} - 12.00€</option>
-              <option value="SE">{language === 'el' ? 'Σουηδία' : 'Sweden'} - 12.00€</option>
-              <option value="CH">{language === 'el' ? 'Ελβετία' : 'Switzerland'} - 12.00€</option>
-              <option value="TR">{language === 'el' ? 'Τουρκία' : 'Turkey'} - 12.00€</option>
-              <option value="UA">{language === 'el' ? 'Ουκρανία' : 'Ukraine'} - 12.00€</option>
-              <option value="GB">{language === 'el' ? 'Ηνωμένο Βασίλειο' : 'United Kingdom'} - 12.00€</option>
-              <option value="VA">{language === 'el' ? 'Βατικανό' : 'Vatican City'} - 12.00€</option>
-              <option value="US">{language === 'el' ? 'ΗΠΑ' : 'USA'} - 12.00€</option>
+              {loadingSettings ? (
+                <option>{language === 'el' ? 'Φόρτωση...' : 'Loading...'}</option>
+              ) : (
+                Object.entries(shippingCosts).map(([code, data]: [string, any]) => (
+                  <option key={code} value={code}>
+                    {language === 'el' ? data.name : data.nameEn} - {data.cost.toFixed(2)}€
+                  </option>
+                ))
+              )}
             </select>
             <p className="text-white/50 text-sm mt-2">
               {language === 'el' 

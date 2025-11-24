@@ -6,11 +6,29 @@ export type Color = 'Black' | 'White';
 export interface Product {
   id: string;
   name: string;
+  nameEl?: string; // Greek name
   price: number;
   image: string;
   stripeUrl: string;
   colors?: Color[];
   imageVariants?: Record<Color, string>;
+  // Product details for single page
+  material?: {
+    en: string;
+    el: string;
+  };
+  description?: {
+    en: string;
+    el: string;
+  };
+  care?: {
+    en: string[];
+    el: string[];
+  };
+  features?: {
+    en: string[];
+    el: string[];
+  };
 }
 
 interface CartItem extends Product {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Product, Size, Color } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -16,11 +17,16 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     product.colors?.[0] // Default to first color if colors exist
   );
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const handleAddToCart = () => {
     onAddToCart(product, selectedSize, selectedColor);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const handleProductClick = () => {
+    navigate(`/product/${product.id}`);
   };
 
   // Get the current image based on selected color
@@ -31,9 +37,10 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   return (
     <div className="w-full max-w-[300px] sm:w-[300px] flex flex-col items-center justify-between bg-[#56514f] rounded-lg p-4 sm:p-5 shadow-lg transition-transform hover:scale-105">
       <div 
-        className="w-full h-[280px] sm:h-[300px] flex items-center justify-center bg-[#6a6562] rounded-lg overflow-hidden"
+        className="w-full h-[280px] sm:h-[300px] flex items-center justify-center bg-[#6a6562] rounded-lg overflow-hidden cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={handleProductClick}
       >
         <ImageWithFallback
           src={currentImage}

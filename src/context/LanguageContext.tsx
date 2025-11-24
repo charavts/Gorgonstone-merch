@@ -35,7 +35,7 @@ const translations = {
     'cart.quantity': 'Ποσότητα',
     'cart.price': 'Τιμή',
     'cart.total': 'Σύνολο',
-    'cart.continuePurchase': 'Συνέχεια με την Αγορά',
+    'cart.continuePurchase': 'Συνέχεια ε την Αγορά',
     'cart.processing': 'Επεξεργασία...',
     
     // Success Page
@@ -62,11 +62,26 @@ const translations = {
     'info.title': 'Σχετικά με το Gorgonstone',
     'info.subtitle': 'Όπου η μυθολογία συναντά τη μόδα',
     'info.story': 'Η Ιστορία μας',
-    'info.storyText': 'Το Gorgonstone γεννήθη��ε από το πάθος για την αρχαία ελληνική υθολογία και την τέχνη. Κάθε σχέδιό μας εμπνέεται από τον μύθο του Περσέα και της Μέδουσας, φέρνοντας την αρχαία ιστορία στο σύγχρονο streetwear.',
+    'info.storyText': 'Το Gorgonstone γεννήθηκε από το πάθος για την αρχαία ελληνική μυθολογία και την τέχνη. Κάθε σχέδιό μας εμπνέεται από τον μύθο του Περσέα και της Μέδουσας, φέρνοντας την αρχαία ιστορία στο σύγχρονο streetwear.',
     'info.quality': 'Ποιότητα',
     'info.qualityText': 'Χρησιμοποιούμε μόνο premium υλικά και τεχνικές εκτύπωσης για να διασφαλίσουμε ότι κάθε κομμάτι είναι ανθεκτικό και άνετο.',
     'info.mission': 'Η Αποστολή μας',
     'info.missionText': 'Να κρατήσουμε ζωντανή την ελληνική μυθολογία μέσα από τη μόδα, δημιουργώντας κομμάτια που λένε μια ιστορία.',
+    
+    // Product Detail
+    'product.sizeChart': 'Οδηγός Μεγεθών',
+    'product.measurements': 'Διαστάσεις (cm)',
+    'product.chest': 'Στήθος',
+    'product.length': 'Μήκος',
+    'product.shoulders': 'Ώμοι',
+    
+    // Auth
+    'auth.login': 'Σύνδεση',
+    'auth.signup': 'Εγγραφή',
+    'auth.logout': 'Αποσύνδεση',
+    'auth.email': 'Email',
+    'auth.password': 'Κωδικός',
+    'auth.name': 'Όνομα',
     
     // Footer
     'footer.copyright': '© 2024 Gorgonstone. Όλα τα δικαιώματα κατοχυρωμένα.',
@@ -118,6 +133,7 @@ const translations = {
     'contact.emailLabel': 'Email',
     'contact.message': 'Message',
     'contact.send': 'Send',
+    'contact.responseTime': 'We typically respond within 24-48 hours',
     
     // Info Page
     'info.title': 'About Gorgonstone',
@@ -128,6 +144,21 @@ const translations = {
     'info.qualityText': 'We only use premium materials and printing techniques to ensure each piece is durable and comfortable.',
     'info.mission': 'Our Mission',
     'info.missionText': 'To keep Greek mythology alive through fashion, creating pieces that tell a story.',
+    
+    // Product Detail
+    'product.sizeChart': 'Size Chart',
+    'product.measurements': 'Measurements (cm)',
+    'product.chest': 'Chest',
+    'product.length': 'Length',
+    'product.shoulders': 'Shoulders',
+    
+    // Auth
+    'auth.login': 'Login',
+    'auth.signup': 'Sign Up',
+    'auth.logout': 'Logout',
+    'auth.email': 'Email',
+    'auth.password': 'Password',
+    'auth.name': 'Name',
     
     // Footer
     'footer.copyright': '© 2024 Gorgonstone. All rights reserved.',
