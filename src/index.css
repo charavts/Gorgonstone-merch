@@ -11,6 +11,7 @@
       --tw-border-style: solid;
       --tw-leading: initial;
       --tw-font-weight: initial;
+      --tw-tracking: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
       --tw-shadow-alpha: 100%;
@@ -54,6 +55,7 @@
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --color-red-100: oklch(.936 .032 17.717);
     --color-red-200: oklch(.885 .062 18.334);
     --color-red-300: oklch(.808 .114 19.571);
     --color-red-400: oklch(.704 .191 22.216);
@@ -81,6 +83,7 @@
     --color-yellow-700: oklch(.554 .135 66.442);
     --color-lime-500: oklch(.768 .233 130.85);
     --color-lime-600: oklch(.648 .2 131.684);
+    --color-green-100: oklch(.962 .044 156.743);
     --color-green-300: oklch(.871 .15 154.449);
     --color-green-400: oklch(.792 .209 151.711);
     --color-green-500: oklch(.723 .219 149.579);
@@ -142,6 +145,7 @@
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
+    --tracking-wide: .025em;
     --leading-relaxed: 1.625;
     --ease-in-out: cubic-bezier(.4, 0, .2, 1);
     --animate-spin: spin 1s linear infinite;
@@ -589,6 +593,10 @@
     margin-top: auto;
   }
 
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
+
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -635,6 +643,10 @@
 
   .hidden {
     display: none;
+  }
+
+  .inline-block {
+    display: inline-block;
   }
 
   .inline-flex {
@@ -793,6 +805,10 @@
     min-width: 80px;
   }
 
+  .min-w-\[280px\] {
+    min-width: 280px;
+  }
+
   .flex-1 {
     flex: 1;
   }
@@ -909,6 +925,14 @@
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
     margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
+  }
+
+  .gap-x-4 {
+    column-gap: calc(var(--spacing) * 4);
+  }
+
+  .gap-y-1 {
+    row-gap: calc(var(--spacing) * 1);
   }
 
   .overflow-hidden {
@@ -1377,6 +1401,10 @@
     padding-top: calc(var(--spacing) * 2);
   }
 
+  .pt-3 {
+    padding-top: calc(var(--spacing) * 3);
+  }
+
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
   }
@@ -1425,10 +1453,6 @@
     text-align: left;
   }
 
-  .text-right {
-    text-align: right;
-  }
-
   .font-mono {
     font-family: var(--font-mono);
   }
@@ -1468,9 +1492,19 @@
     line-height: var(--leading-relaxed);
   }
 
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
+  }
+
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
   }
 
   .break-all {
@@ -1503,12 +1537,20 @@
     }
   }
 
+  .text-green-100 {
+    color: var(--color-green-100);
+  }
+
   .text-green-300 {
     color: var(--color-green-300);
   }
 
   .text-green-400 {
     color: var(--color-green-400);
+  }
+
+  .text-red-100 {
+    color: var(--color-red-100);
   }
 
   .text-red-200 {
@@ -1521,6 +1563,10 @@
 
   .text-red-400 {
     color: var(--color-red-400);
+  }
+
+  .text-red-500 {
+    color: var(--color-red-500);
   }
 
   .text-white {
@@ -1579,6 +1625,10 @@
 
   .text-yellow-300 {
     color: var(--color-yellow-300);
+  }
+
+  .uppercase {
+    text-transform: uppercase;
   }
 
   .italic {
@@ -1876,6 +1926,18 @@
   @media (hover: hover) {
     .hover\:bg-teal-700:hover {
       background-color: var(--color-teal-700);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:bg-white\/20:hover {
+      background-color: #fff3;
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-white\/20:hover {
+        background-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+      }
     }
   }
 
@@ -2323,6 +2385,11 @@ html {
 }
 
 @property --tw-font-weight {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-tracking {
   syntax: "*";
   inherits: false
 }

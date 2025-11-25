@@ -202,7 +202,7 @@ app.post("/make-server-deab0cbd/force-reset-products", async (c) => {
       {
         id: '5',
         name: 'Gorgonstone Sweatshirt',
-        nameEl: 'Gorgonstone Φούτερ',
+        nameEl: 'Gorgonstone ούτερ',
         price: 36,
         image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03',
@@ -369,7 +369,7 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
       cancel_url: `${origin}/#/cart`,
       locale: stripeLocale,
       phone_number_collection: {
-        enabled: true,
+        enabled: true, // Required for shipping company to contact customer
       },
       shipping_address_collection: {
         allowed_countries: [shippingCountry], // Only allow the selected country
@@ -622,7 +622,7 @@ function getDefaultSiteSettings() {
       'AT': { name: 'Αυστρία', nameEn: 'Austria', cost: 12.00 },
       'BE': { name: 'Βέλγιο', nameEn: 'Belgium', cost: 12.00 },
       'BG': { name: 'Βουλγαρία', nameEn: 'Bulgaria', cost: 12.00 },
-      'HR': { name: 'Κροατία', nameEn: 'Croatia', cost: 12.00 },
+      'HR': { name: 'Κρατία', nameEn: 'Croatia', cost: 12.00 },
       'CZ': { name: 'Τεχία', nameEn: 'Czech Republic', cost: 12.00 },
       'DK': { name: 'Δανία', nameEn: 'Denmark', cost: 12.00 },
       'EE': { name: 'Εσθονία', nameEn: 'Estonia', cost: 12.00 },
@@ -632,7 +632,7 @@ function getDefaultSiteSettings() {
       'LV': { name: 'Λετονία', nameEn: 'Latvia', cost: 12.00 },
       'LT': { name: 'Λιθουανία', nameEn: 'Lithuania', cost: 12.00 },
       'LU': { name: 'Λουξεμβούργο', nameEn: 'Luxembourg', cost: 12.00 },
-      'MT': { name: '��άλτα', nameEn: 'Malta', cost: 12.00 },
+      'MT': { name: 'άλτα', nameEn: 'Malta', cost: 12.00 },
       'NL': { name: 'Ολλανδία', nameEn: 'Netherlands', cost: 12.00 },
       'PL': { name: 'Πολωνία', nameEn: 'Poland', cost: 12.00 },
       'PT': { name: 'Πορτογαλία', nameEn: 'Portugal', cost: 12.00 },
@@ -648,7 +648,7 @@ function getDefaultSiteSettings() {
         paragraph3: 'Every piece aims to bring the spirit of antiquity into the present, allowing wearers to carry fragments of myth, sculpture, and history as living forms of art.'
       },
       el: {
-        paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σ μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμη του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
+        paragraph1: 'Αυτό το art-driven T-shirt project βασίζεται σ μια βαθιά ευαισθησία απένατι στην αισθητική, την ιστορία και τη πολιτιστική δύναμ�� του αρχαίου κόσμου. Κάθε σχέδιο εμπνέεται από τους μύθους, τους ήρωες και τους δαίμονες που διαμόρφωσαν τους πρώτους πολιτισμούς, γιορτάζοντας την αιώνια σύνδεση μεταξύ αφήγησης και οπτικής τέχνης.',
         paragraph2: 'Η βασική έμπνευση προέρχεται από τν θρυλικό μύθο του Περσέα και της Μέδουσας—ένα αιώνιο σύμβολο θάρρους, μεταμόρφωσης και της θλής γραμμής μεταξύ τέρατος και μύθου. Μαζί με την ευρύτερη εποχή των ηρώων, αυτές οι αφηγήσεις τροφοδοτούν μια συλλογή που συνδυάζει τον αρχαίο συμβολισμό με τη σύγχρονη έκφραση.',
         paragraph3: 'Κάθε κομμάτι στοχεει να φέρει το πνεύμα της αρχαιότητας στο παρόν, επιτρέποντας στους φορείς να μεταφέρουν θραύσματα μύθου, γλυπτικής και ιστορίας ως ζωντανές μορφές τέχνης.'
       }
@@ -773,7 +773,7 @@ app.post("/make-server-deab0cbd/create-checkout", async (c) => {
       cancel_url: `${origin}/#/cart`,
       locale: stripeLocale,
       phone_number_collection: {
-        enabled: true,
+        enabled: true, // Required for shipping company to contact customer
       },
       shipping_address_collection: {
         allowed_countries: [shippingCountry], // Only allow the selected country
@@ -963,7 +963,165 @@ app.post("/make-server-deab0cbd/upload-image", async (c) => {
 
 // ============== ORDERS ENDPOINTS ==============
 
-// Save order after successful Stripe payment
+// Retrieve Stripe session and save order (called from Success page)
+app.post("/make-server-deab0cbd/retrieve-and-save-order", async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) {
+      console.error('❌ Unauthorized - no valid user:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    const { sessionId } = await c.req.json();
+    
+    if (!sessionId) {
+      return c.json({ error: 'Session ID required' }, 400);
+    }
+
+    console.log('💾 Retrieving Stripe session and saving order:', sessionId);
+    console.log('👤 User:', user.id, user.email);
+
+    // Check if order already exists (use payment intent ID as unique identifier)
+    const orderKey = `order_${user.id}_${paymentIntentId}`;
+    const existingOrder = await kv.get(orderKey);
+    
+    if (existingOrder) {
+      console.log('✅ Order already saved, returning existing order');
+      return c.json({ success: true, order: existingOrder, alreadyExists: true });
+    }
+
+    // Initialize Stripe
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      return c.json({ error: "Stripe configuration error" }, 500);
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: "2024-11-20.acacia",
+    });
+
+    // Retrieve the checkout session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['line_items', 'customer_details', 'shipping_cost', 'shipping_details', 'payment_intent']
+    });
+
+    console.log('📦 Retrieved Stripe session:', session.id);
+    console.log('💰 Amount total:', session.amount_total);
+    console.log('🛒 Line items count:', session.line_items?.data?.length);
+    
+    // Get payment intent ID
+    const paymentIntentId = typeof session.payment_intent === 'string' 
+      ? session.payment_intent 
+      : session.payment_intent?.id;
+
+    if (!paymentIntentId) {
+      console.error('❌ No payment intent found for session');
+      return c.json({ error: 'No payment intent found' }, 400);
+    }
+
+    console.log('✅ Payment Intent ID:', paymentIntentId);
+
+    if (!session.line_items || !session.line_items.data || session.line_items.data.length === 0) {
+      console.error('❌ No line items in session');
+      return c.json({ error: 'Invalid session - no items' }, 400);
+    }
+
+    // Extract order items from line items
+    const items = session.line_items.data.map((lineItem: any) => {
+      // Parse product name to extract details
+      // Format: "Product Name - Color - Size: X" or "Product Name - Size: X"
+      const name = lineItem.description || '';
+      const sizeMatch = name.match(/Size:\s*(\w+)/i);
+      const colorMatch = name.match(/-\s*(\w+)\s*-\s*Size/i);
+      
+      let productName = name;
+      if (sizeMatch) {
+        productName = name.split(' - Size:')[0];
+      }
+      
+      return {
+        name: productName,
+        quantity: lineItem.quantity,
+        price: lineItem.amount_total / 100 / lineItem.quantity, // Convert from cents and divide by quantity
+        size: sizeMatch ? sizeMatch[1] : 'M',
+        color: colorMatch ? colorMatch[1] : undefined,
+        image: '', // Will be populated below
+      };
+    });
+
+    // Get products from KV store to match images
+    const products = await kv.get('products') || [];
+    
+    // Match product names to get images
+    items.forEach((item: any) => {
+      const product = products.find((p: any) => {
+        const baseName = item.name.split(' - ')[0]; // Remove color if present
+        return p.name === baseName || p.nameEl === baseName || p.name === item.name;
+      });
+      
+      if (product) {
+        // If product has color variants, use the correct image
+        if (item.color && product.imageVariants && product.imageVariants[item.color]) {
+          item.image = product.imageVariants[item.color];
+        } else {
+          item.image = product.image;
+        }
+        item.productId = product.id;
+        item.nameEl = product.nameEl;
+      }
+    });
+
+    // Calculate total and shipping
+    const total = session.amount_total ? session.amount_total / 100 : 0;
+    const shippingCost = session.shipping_cost?.amount_total ? session.shipping_cost.amount_total / 100 : 0;
+    const itemsTotal = total - shippingCost;
+
+    // Extract shipping address
+    const shippingDetails = session.shipping_details || session.customer_details;
+    const shippingAddress = {
+      name: shippingDetails?.name || session.customer_details?.name || 'Customer',
+      email: session.customer_details?.email || user.email || '',
+      address: shippingDetails?.address?.line1 || '',
+      city: shippingDetails?.address?.city || '',
+      postalCode: shippingDetails?.address?.postal_code || '',
+      country: shippingDetails?.address?.country || ''
+    };
+
+    // Create order object
+    const order = {
+      orderId: paymentIntentId,
+      sessionId: sessionId, // Keep session ID for reference
+      userId: user.id,
+      userEmail: user.email,
+      items,
+      total: itemsTotal,
+      shippingCost,
+      shippingAddress,
+      paymentMethod: 'Card (****)',
+      status: 'paid',
+      createdAt: new Date().toISOString(),
+    };
+
+    // Save order to KV store
+    await kv.set(orderKey, order);
+
+    console.log('✅ Order saved successfully:', orderKey);
+
+    return c.json({ success: true, order });
+  } catch (error) {
+    console.error('❌ Retrieve and save order error:', error.message);
+    console.error('Stack:', error.stack);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Save order after successful Stripe payment (OLD - keeping for backwards compatibility)
 app.post("/make-server-deab0cbd/save-order", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
@@ -1039,6 +1197,35 @@ app.get("/make-server-deab0cbd/my-orders", async (c) => {
 
     console.log('✅ Found orders:', orders.length);
 
+    // Get products to enrich orders with images if missing
+    const products = await kv.get('products') || [];
+
+    // Enrich orders with product images if missing
+    orders.forEach((order: any) => {
+      order.items.forEach((item: any) => {
+        // If item doesn't have an image, try to match it with products
+        if (!item.image || item.image === '') {
+          const product = products.find((p: any) => {
+            const baseName = item.name.split(' - ')[0];
+            return p.name === baseName || p.nameEl === baseName || p.name === item.name;
+          });
+          
+          if (product) {
+            // If product has color variants, use the correct image
+            if (item.color && product.imageVariants && product.imageVariants[item.color]) {
+              item.image = product.imageVariants[item.color];
+            } else {
+              item.image = product.image;
+            }
+            item.productId = product.id;
+            item.nameEl = product.nameEl;
+            
+            console.log(`🖼️ Added image for ${item.name}:`, item.image);
+          }
+        }
+      });
+    });
+
     // Sort orders by date (newest first)
     const sortedOrders = orders.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -1047,6 +1234,287 @@ app.get("/make-server-deab0cbd/my-orders", async (c) => {
     return c.json({ orders: sortedOrders });
   } catch (error) {
     console.error('❌ Get orders error:', error.message);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Sync orders from Stripe - searches for all successful payments for a user's email
+app.post("/make-server-deab0cbd/sync-orders", async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) {
+      console.error('❌ Unauthorized - no valid user:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    console.log('🔄 Syncing orders from Stripe for user:', user.email);
+
+    // Initialize Stripe
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      return c.json({ error: "Stripe configuration error" }, 500);
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: "2024-11-20.acacia",
+    });
+
+    // Search for checkout sessions by customer email
+    const sessions = await stripe.checkout.sessions.list({
+      limit: 100,
+      expand: ['data.line_items', 'data.payment_intent'] // Expand line_items and payment_intent
+    });
+
+    console.log(`📊 Found ${sessions.data.length} total Stripe sessions`);
+
+    // Filter for this user's email and completed sessions
+    const userSessions = sessions.data.filter((session: any) => {
+      const sessionEmail = session.customer_details?.email?.toLowerCase();
+      const userEmail = user.email?.toLowerCase();
+      const isCompleted = session.payment_status === 'paid';
+      
+      return sessionEmail === userEmail && isCompleted;
+    });
+
+    console.log(`✅ Found ${userSessions.length} completed sessions for ${user.email}`);
+
+    let syncedCount = 0;
+    let alreadyExistsCount = 0;
+    const syncedOrders = [];
+
+    // Process each session
+    for (const session of userSessions) {
+      // Get payment intent ID
+      const paymentIntentId = typeof session.payment_intent === 'string' 
+        ? session.payment_intent 
+        : session.payment_intent?.id;
+
+      if (!paymentIntentId) {
+        console.log(`⏭️ Skipping session ${session.id} - no payment intent`);
+        continue;
+      }
+
+      const orderKey = `order_${user.id}_${paymentIntentId}`;
+      const oldOrderKey = `order_${user.id}_${session.id}`; // Old key format with session ID
+      
+      // Check if already exists with new format
+      const existingOrder = await kv.get(orderKey);
+      if (existingOrder) {
+        console.log(`⏭️ Order already exists: ${paymentIntentId}`);
+        alreadyExistsCount++;
+        
+        // Clean up old format if it exists (migration cleanup)
+        const oldOrder = await kv.get(oldOrderKey);
+        if (oldOrder) {
+          console.log(`🧹 Cleaning up old order format: ${session.id}`);
+          await kv.del(oldOrderKey);
+        }
+        continue;
+      }
+
+      // Check if exists in old format - if so, migrate it
+      const oldOrder = await kv.get(oldOrderKey);
+      if (oldOrder) {
+        console.log(`🔄 Migrating order from old format: ${session.id} → ${paymentIntentId}`);
+        
+        // Update the order with new ID
+        const migratedOrder = {
+          ...oldOrder,
+          orderId: paymentIntentId,
+          sessionId: session.id,
+        };
+        
+        // Save with new key
+        await kv.set(orderKey, migratedOrder);
+        
+        // Delete old key
+        await kv.del(oldOrderKey);
+        
+        syncedOrders.push(migratedOrder);
+        syncedCount++;
+        
+        console.log(`✅ Order migrated: ${paymentIntentId}`);
+        continue;
+      }
+
+      console.log(`💾 Saving new order: ${paymentIntentId} (session: ${session.id})`);
+
+      // Extract order items from line items
+      const items = (session.line_items?.data || []).map((lineItem: any) => {
+        const name = lineItem.description || '';
+        const sizeMatch = name.match(/Size:\s*(\w+)/i);
+        const colorMatch = name.match(/-\s*(\w+)\s*-\s*Size/i);
+        
+        let productName = name;
+        if (sizeMatch) {
+          productName = name.split(' - Size:')[0];
+        }
+        
+        return {
+          name: productName,
+          quantity: lineItem.quantity,
+          price: lineItem.amount_total / 100 / lineItem.quantity,
+          size: sizeMatch ? sizeMatch[1] : 'M',
+          color: colorMatch ? colorMatch[1] : undefined,
+          image: '', // Will be populated below
+        };
+      });
+
+      // Get products from KV store to match images
+      const products = await kv.get('products') || [];
+      
+      // Match product names to get images
+      items.forEach((item: any) => {
+        const product = products.find((p: any) => {
+          const baseName = item.name.split(' - ')[0]; // Remove color if present
+          return p.name === baseName || p.nameEl === baseName || p.name === item.name;
+        });
+        
+        if (product) {
+          // If product has color variants, use the correct image
+          if (item.color && product.imageVariants && product.imageVariants[item.color]) {
+            item.image = product.imageVariants[item.color];
+          } else {
+            item.image = product.image;
+          }
+          item.productId = product.id;
+          item.nameEl = product.nameEl;
+        }
+      });
+
+      // Calculate totals
+      const total = session.amount_total ? session.amount_total / 100 : 0;
+      const shippingCost = session.shipping_cost?.amount_total ? session.shipping_cost.amount_total / 100 : 0;
+      const itemsTotal = total - shippingCost;
+
+      // Extract shipping address
+      const shippingDetails = session.shipping_details || session.customer_details;
+      const shippingAddress = {
+        name: shippingDetails?.name || session.customer_details?.name || 'Customer',
+        email: session.customer_details?.email || user.email || '',
+        address: shippingDetails?.address?.line1 || '',
+        city: shippingDetails?.address?.city || '',
+        postalCode: shippingDetails?.address?.postal_code || '',
+        country: shippingDetails?.address?.country || ''
+      };
+
+      // Create order object
+      const order = {
+        orderId: paymentIntentId,
+        sessionId: session.id, // Keep session ID for reference
+        userId: user.id,
+        userEmail: user.email,
+        items,
+        total: itemsTotal,
+        shippingCost,
+        shippingAddress,
+        paymentMethod: 'Card (****)',
+        status: 'paid',
+        createdAt: new Date(session.created * 1000).toISOString(), // Convert Unix timestamp
+      };
+
+      // Save order
+      await kv.set(orderKey, order);
+      syncedOrders.push(order);
+      syncedCount++;
+      
+      console.log(`✅ Order saved: ${paymentIntentId}`);
+    }
+
+    console.log(`🎉 Sync complete: ${syncedCount} new orders, ${alreadyExistsCount} already existed`);
+
+    return c.json({ 
+      success: true, 
+      syncedCount,
+      alreadyExistsCount,
+      totalFound: userSessions.length,
+      syncedOrders 
+    });
+  } catch (error) {
+    console.error('❌ Sync orders error:', error.message);
+    console.error('Stack:', error.stack);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Cleanup duplicate orders (migration helper)
+app.post("/make-server-deab0cbd/cleanup-duplicate-orders", async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) {
+      console.error('❌ Unauthorized - no valid user:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    console.log('🧹 Starting cleanup for user:', user.email);
+
+    // Get all orders for this user
+    const allOrdersData = await kv.getByPrefix(`order_${user.id}_`);
+    console.log(`📦 Found ${allOrdersData.length} total orders`);
+
+    // Group orders by sessionId to find duplicates
+    const ordersBySession = new Map<string, any[]>();
+    
+    for (const orderData of allOrdersData) {
+      const order = orderData;
+      const sessionId = order.sessionId || order.orderId; // sessionId or fallback to orderId
+      
+      if (!ordersBySession.has(sessionId)) {
+        ordersBySession.set(sessionId, []);
+      }
+      ordersBySession.get(sessionId)!.push(order);
+    }
+
+    let deletedCount = 0;
+    const duplicates = [];
+
+    // For each session, keep only the one with payment intent ID
+    for (const [sessionId, orders] of ordersBySession.entries()) {
+      if (orders.length > 1) {
+        console.log(`🔍 Found ${orders.length} orders for session ${sessionId}`);
+        duplicates.push({ sessionId, count: orders.length });
+        
+        // Sort: payment intent IDs (pi_) should be kept, session IDs (cs_) should be deleted
+        orders.sort((a, b) => {
+          const aIsPaymentIntent = a.orderId.startsWith('pi_');
+          const bIsPaymentIntent = b.orderId.startsWith('pi_');
+          return bIsPaymentIntent ? 1 : -1; // Keep payment intent IDs
+        });
+
+        // Delete all except the first one (which should be the payment intent)
+        for (let i = 1; i < orders.length; i++) {
+          const orderToDelete = orders[i];
+          const keyToDelete = `order_${user.id}_${orderToDelete.orderId}`;
+          await kv.del(keyToDelete);
+          console.log(`🗑️ Deleted duplicate: ${orderToDelete.orderId}`);
+          deletedCount++;
+        }
+      }
+    }
+
+    console.log(`✅ Cleanup complete: ${deletedCount} duplicates removed`);
+
+    return c.json({ 
+      success: true, 
+      deletedCount,
+      duplicatesFound: duplicates.length,
+      duplicates
+    });
+  } catch (error) {
+    console.error('❌ Cleanup error:', error.message);
+    console.error('Stack:', error.stack);
     return c.json({ error: error.message }, 500);
   }
 });

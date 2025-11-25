@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle, Package, ArrowRight } from 'lucide-react';
+import { CheckCircle, Package, ArrowRight, AlertCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,98 +9,85 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 export default function Success() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const { cart, clearCart } = useCart();
+  const { clearCart } = useCart();
   const { t } = useLanguage();
   const { user, getAccessToken } = useAuth();
   const [orderSaved, setOrderSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const saveOrderAndClearCart = async () => {
-      // Only save order if user is logged in and we have cart items
-      if (!user || !sessionId || cart.length === 0 || orderSaved) {
-        if (cart.length > 0 && !orderSaved) {
-          clearCart(); // Clear cart even if not logged in
-        }
+    const saveOrder = async () => {
+      // Only proceed if we have user and sessionId and haven't saved yet
+      if (!user || !sessionId || orderSaved || saving) {
+        console.log('⏭️ Skipping save:', { 
+          hasUser: !!user, 
+          hasSessionId: !!sessionId, 
+          orderSaved, 
+          saving 
+        });
         return;
       }
 
+      setSaving(true);
+      setError(null);
+
       try {
-        console.log('💾 Saving order after successful payment...');
+        console.log('💾 Saving order from Stripe session:', sessionId);
+        console.log('👤 User:', user.email);
         
-        // Get cart data before clearing
-        const orderItems = cart.map(item => ({
-          productId: item.id,
-          name: item.name,
-          nameEl: item.nameEl,
-          size: item.size,
-          color: item.color,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image
-        }));
-
-        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        
-        // Get shipping info from localStorage (saved during checkout)
-        const shippingCountry = localStorage.getItem('last_shipping_country') || 'GR';
-        const shippingCostStr = localStorage.getItem('last_shipping_cost') || '3.50';
-        const shippingCost = parseFloat(shippingCostStr);
-
-        // Create a basic shipping address (Stripe has the real one)
-        // In a real app, you'd fetch this from Stripe API
-        const shippingAddress = {
-          name: user.name || user.email || 'Customer',
-          email: user.email || '',
-          address: 'Provided during checkout',
-          city: '',
-          postalCode: '',
-          country: shippingCountry
-        };
-
         const accessToken = await getAccessToken();
         
         if (!accessToken) {
-          console.error('No access token available');
-          clearCart();
+          console.error('❌ No access token available');
+          setError('Authentication error - please log in again');
           return;
         }
 
-        // Save order to backend
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/save-order`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({
-              orderId: sessionId,
-              items: orderItems,
-              total,
-              shippingCost,
-              shippingAddress,
-              paymentMethod: 'Card (****)'
-            }),
-          }
-        );
+        console.log('🔑 Access token obtained');
+
+        // Call new endpoint that retrieves from Stripe and saves
+        const url = `https://${projectId}.supabase.co/functions/v1/make-server-deab0cbd/retrieve-and-save-order`;
+        console.log('📡 Calling:', url);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ sessionId }),
+        });
+
+        console.log('📥 Response status:', response.status);
 
         if (response.ok) {
-          console.log('✅ Order saved successfully');
+          const data = await response.json();
+          console.log('✅ Order saved successfully:', data.order);
+          
+          if (data.alreadyExists) {
+            console.log('ℹ️ Order was already saved previously');
+          }
+          
           setOrderSaved(true);
+          
+          // Clear cart after successful save
+          clearCart();
         } else {
-          console.error('Failed to save order:', await response.text());
+          const errorText = await response.text();
+          console.error('❌ Failed to save order:', errorText);
+          setError(`Failed to save order: ${errorText}`);
         }
       } catch (error) {
-        console.error('Error saving order:', error);
+        console.error('❌ Error saving order:', error);
+        setError(`Error: ${error.message}`);
       } finally {
-        // Always clear cart after payment success
-        clearCart();
+        setSaving(false);
       }
     };
 
-    saveOrderAndClearCart();
-  }, [user, sessionId, cart, clearCart, orderSaved, getAccessToken]);
+    saveOrder();
+  }, [user, sessionId, orderSaved, saving, getAccessToken, clearCart]);
 
   return (
     <main className="pt-24 pb-16 px-5 min-h-screen flex items-center justify-center">
@@ -147,6 +134,14 @@ export default function Success() {
             </button>
           </Link>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 text-center">
+            <AlertCircle size={24} className="text-red-500 inline-block mr-2" />
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
       </div>
     </main>
   );
