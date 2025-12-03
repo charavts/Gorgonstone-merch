@@ -10,7 +10,7 @@ export default function Success() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const { clearCart } = useCart();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user, getAccessToken } = useAuth();
   const [orderSaved, setOrderSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -56,7 +56,10 @@ export default function Success() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({ 
+            sessionId,
+            locale: language 
+          }),
         });
 
         console.log('📥 Response status:', response.status);

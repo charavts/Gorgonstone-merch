@@ -4,6 +4,7 @@ import { logger } from "npm:hono/logger";
 import Stripe from "npm:stripe@17.4.0";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as kv from "./kv_store.tsx";
+import { sendOrderConfirmationEmail } from "./email-service.tsx";
 
 const app = new Hono();
 
@@ -978,7 +979,7 @@ app.post("/make-server-deab0cbd/retrieve-and-save-order", async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const { sessionId } = await c.req.json();
+    const { sessionId, locale } = await c.req.json();
     
     if (!sessionId) {
       return c.json({ error: 'Session ID required' }, 400);
@@ -986,15 +987,7 @@ app.post("/make-server-deab0cbd/retrieve-and-save-order", async (c) => {
 
     console.log('💾 Retrieving Stripe session and saving order:', sessionId);
     console.log('👤 User:', user.id, user.email);
-
-    // Check if order already exists (use payment intent ID as unique identifier)
-    const orderKey = `order_${user.id}_${paymentIntentId}`;
-    const existingOrder = await kv.get(orderKey);
-    
-    if (existingOrder) {
-      console.log('✅ Order already saved, returning existing order');
-      return c.json({ success: true, order: existingOrder, alreadyExists: true });
-    }
+    console.log('🌐 Locale:', locale || 'en');
 
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
@@ -1026,6 +1019,15 @@ app.post("/make-server-deab0cbd/retrieve-and-save-order", async (c) => {
     }
 
     console.log('✅ Payment Intent ID:', paymentIntentId);
+
+    // Check if order already exists (use payment intent ID as unique identifier)
+    const orderKey = `order_${user.id}_${paymentIntentId}`;
+    const existingOrder = await kv.get(orderKey);
+    
+    if (existingOrder) {
+      console.log('✅ Order already saved, returning existing order');
+      return c.json({ success: true, order: existingOrder, alreadyExists: true });
+    }
 
     if (!session.line_items || !session.line_items.data || session.line_items.data.length === 0) {
       console.error('❌ No line items in session');
@@ -1112,6 +1114,53 @@ app.post("/make-server-deab0cbd/retrieve-and-save-order", async (c) => {
     await kv.set(orderKey, order);
 
     console.log('✅ Order saved successfully:', orderKey);
+
+    // Send order confirmation email
+    try {
+      // Determine delivery estimate based on country
+      const country = shippingAddress.country;
+      let deliveryEstimate = '';
+      
+      if (locale === 'el') {
+        if (country === 'GR') {
+          deliveryEstimate = '2-3 εργάσιμες ημέρες';
+        } else if (country === 'CY') {
+          deliveryEstimate = '3-5 εργάσιμες ημέρες';
+        } else {
+          deliveryEstimate = '5-7 εργάσιμες ημέρες';
+        }
+      } else {
+        if (country === 'GR') {
+          deliveryEstimate = '2-3 business days';
+        } else if (country === 'CY') {
+          deliveryEstimate = '3-5 business days';
+        } else {
+          deliveryEstimate = '5-7 business days';
+        }
+      }
+
+      const emailSent = await sendOrderConfirmationEmail({
+        orderId: paymentIntentId,
+        customerEmail: shippingAddress.email,
+        customerName: shippingAddress.name,
+        items: items,
+        subtotal: itemsTotal,
+        shippingCost: shippingCost,
+        total: total,
+        shippingCountry: country,
+        deliveryEstimate: deliveryEstimate,
+        locale: locale || 'en',
+      });
+
+      if (emailSent) {
+        console.log('✅ Order confirmation email sent to:', shippingAddress.email);
+      } else {
+        console.warn('⚠️ Failed to send order confirmation email, but order was saved');
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending order confirmation email:', emailError);
+      // Don't fail the entire request if email fails - order is already saved
+    }
 
     return c.json({ success: true, order });
   } catch (error) {
