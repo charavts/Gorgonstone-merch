@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Size = 'Small' | 'Medium' | 'Large';
 export type Color = 'Black' | 'White';
@@ -51,7 +51,18 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('gorgonstone_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('gorgonstone_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (product: Product, size: Size, color?: Color) => {
     setCartItems((prevItems) => {
@@ -92,6 +103,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem('gorgonstone_cart');
   };
 
   const getCartTotal = () => {
