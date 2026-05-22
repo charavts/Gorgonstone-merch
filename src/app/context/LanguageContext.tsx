@@ -36,7 +36,7 @@ const translations = {
     'cart.quantity': 'Ποσότητα',
     'cart.price': 'Τιμή',
     'cart.total': 'Σύνολο',
-    'cart.continuePurchase': 'Συνέχεια ε την Αγορά',
+    'cart.continuePurchase': 'Συνέχεια με την Αγορά',
     'cart.processing': 'Επεξεργασία...',
     
     // Success Page

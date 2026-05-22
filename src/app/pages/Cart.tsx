@@ -282,7 +282,7 @@ export default function Cart() {
             <select
               value={shippingCountry}
               onChange={(e) => setShippingCountry(e.target.value)}
-              className="w-full bg-[#56514f] text-white border border-white/20 rounded-lg px-4 py-3 focus:outline-none focus:border-white/40 transition-colors"
+              className="w-full max-w-xs bg-[#56514f] text-white border border-white/20 rounded-lg px-4 py-3 focus:outline-none focus:border-white/40 transition-colors"
             >
               {loadingSettings ? (
                 <option>{language === 'el' ? 'Φόρτωση...' : 'Loading...'}</option>
