@@ -1,5 +1,5 @@
 {
-  "installCommand": "node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));const deps=Object.fromEntries(Object.entries(p.dependencies).filter(([k])=>!/@\\d/.test(k)));const clean={name:p.name,private:p.private,version:p.version,type:p.type,scripts:p.scripts,dependencies:deps,devDependencies:p.devDependencies};fs.writeFileSync('package.json',JSON.stringify(clean,null,2));\" && npm install",
+  "installCommand": "sed -i '/\"[^\"]*@[0-9]/d' package.json && npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "dist"
 }
