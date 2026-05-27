@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import sweatshirtBlackImg from '../../imports/image.jpg';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { useCart } from '../context/CartContext';
@@ -199,7 +200,7 @@ export default function ProductDetail() {
       id: '5',
       name: 'Gorgonstone Sweatshirt',
       price: 36,
-      image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      image: sweatshirtBlackImg,
       stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03'
     },
     {

@@ -1,3 +1,5 @@
+import sweatshirtBlackImg from '../../imports/image.jpg';
+
 // Fallback products with Unsplash placeholder images
 export const products = [
   {
@@ -37,7 +39,7 @@ export const products = [
     name: 'Gorgonstone Sweatshirt',
     nameEl: 'Gorgonstone Φούτερ',
     price: 36,
-    image: 'https://images.unsplash.com/photo-1614173968962-0e61c5ed196f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHN3ZWF0c2hpcnR8ZW58MXx8fHwxNzYzOTk5OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: sweatshirtBlackImg,
     stripeUrl: 'https://buy.stripe.com/fZu7sMfh37dBdAD8wj2Nq03',
     material: {
       en: '80% Cotton, 20% Polyester',
