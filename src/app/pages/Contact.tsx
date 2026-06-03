@@ -1,6 +1,6 @@
 import { Mail, Send } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import gorgonstoneLogoImg from '../../imports/my-project-page-1__2_.png';
+import gorgonstoneLogoImg from '../../imports/gorgonstone_exact_colors_transparent.png';
 import { useLanguage } from '../context/LanguageContext';
 import { useState, useEffect } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -55,10 +55,6 @@ export default function Contact() {
               src={gorgonstoneLogoImg}
               alt="Gorgonstone Logo"
               className="w-[280px] sm:w-[380px] max-w-[90vw] h-auto"
-              style={{
-                filter: 'drop-shadow(0 0 0 transparent)',
-                background: 'transparent'
-              }}
             />
           </div>
         </div>
