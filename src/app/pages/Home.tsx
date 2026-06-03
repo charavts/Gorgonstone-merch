@@ -1,6 +1,7 @@
 import { products as productList } from '../data/products';
 import { useState, useEffect } from 'react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import gorgonstoneLogoImg from '../../imports/my-project-page-1__2_.png';
 import { useLanguage } from '../context/LanguageContext';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -87,15 +88,17 @@ export default function Home() {
   return (
     <main className="pt-24 pb-40 px-5">
       {/* Logo Section */}
-      <div className="mb-12">
-        <div className="py-0">
-          <div className="max-w-[320px] mx-auto px-5 flex justify-center">
-            <ImageWithFallback
-              src={logoUrl}
-              alt="Gorgonstone Logo"
-              className="w-[300px] max-w-[80vw] h-auto opacity-90"
-            />
-          </div>
+      <div className="mb-12 text-center">
+        <div className="flex justify-center">
+          <ImageWithFallback
+            src={gorgonstoneLogoImg}
+            alt="Gorgonstone Logo"
+            className="w-[280px] sm:w-[380px] max-w-[90vw] h-auto"
+            style={{
+              filter: 'drop-shadow(0 0 0 transparent)',
+              background: 'transparent'
+            }}
+          />
         </div>
       </div>
 

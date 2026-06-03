@@ -1,4 +1,6 @@
 import { Mail, Send } from 'lucide-react';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import gorgonstoneLogoImg from '../../imports/my-project-page-1__2_.png';
 import { useLanguage } from '../context/LanguageContext';
 import { useState, useEffect } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -8,6 +10,7 @@ export default function Contact() {
   const [contactEmail, setContactEmail] = useState('infogorgonstone@gmail.com');
   const [responseTime, setResponseTime] = useState({ en: '', el: '' });
   const [loading, setLoading] = useState(true);
+  const [logoUrl, setLogoUrl] = useState('');
 
   useEffect(() => {
     const loadContactSettings = async () => {
@@ -29,6 +32,7 @@ export default function Contact() {
               en: 'We typically respond in 24-48 hours',
               el: 'Συνήθως απαντάμε εντός 24-48 ωρών'
             });
+            if (data.settings.logoUrl) setLogoUrl(data.settings.logoUrl);
           }
         }
       } catch (error) {
@@ -44,6 +48,20 @@ export default function Contact() {
   return (
     <main className="pt-24 pb-16 px-5 min-h-screen flex items-center justify-center">
       <div className="max-w-2xl w-full">
+        {/* Logo Section */}
+        <div className="mb-8 text-center">
+          <div className="flex justify-center">
+            <ImageWithFallback
+              src={gorgonstoneLogoImg}
+              alt="Gorgonstone Logo"
+              className="w-[280px] sm:w-[380px] max-w-[90vw] h-auto"
+              style={{
+                filter: 'drop-shadow(0 0 0 transparent)',
+                background: 'transparent'
+              }}
+            />
+          </div>
+        </div>
         <div className="bg-[#6a6562] rounded-lg shadow-2xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h1 className="text-white mb-4">{t('contact.title')}</h1>

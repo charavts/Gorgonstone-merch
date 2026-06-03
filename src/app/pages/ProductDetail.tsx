@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import sweatshirtBlackImg from '../../imports/image.jpg';
+import sweatshirtBlackImg from '../../imports/High-Quality_Cotton_Sweatshirt_Black.png';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { useCart } from '../context/CartContext';

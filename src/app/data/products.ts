@@ -1,4 +1,4 @@
-import sweatshirtBlackImg from '../../imports/image.jpg';
+import sweatshirtBlackImg from '../../imports/High-Quality_Cotton_Sweatshirt_Black.png';
 
 // Fallback products with Unsplash placeholder images
 export const products = [
