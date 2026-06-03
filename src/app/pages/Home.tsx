@@ -94,6 +94,7 @@ export default function Home() {
             src={gorgonstoneLogoImg}
             alt="Gorgonstone Logo"
             className="w-[280px] sm:w-[380px] max-w-[90vw] h-auto"
+            style={{ filter: 'brightness(0.75)' }}
           />
         </div>
       </div>
