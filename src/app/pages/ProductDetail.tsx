@@ -446,19 +446,21 @@ export default function ProductDetail() {
             </button>
 
             {/* Care Instructions */}
-            <div className="mt-8 pt-8 border-t border-white/20">
-              <h3 className="text-white mb-3">
-                {language === 'el' ? 'Οδηγίες Φροντίδας' : 'Care Instructions'}
-              </h3>
-              <ul className="space-y-2">
-                {(language === 'el' ? details.care.el : details.care.en).map((instruction, index) => (
-                  <li key={index} className="flex items-start gap-2 text-white/80 text-sm">
-                    <span className="text-white/50">•</span>
-                    <span>{instruction}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {details?.care && (
+              <div className="mt-8 pt-8 border-t border-white/20">
+                <h3 className="text-white mb-3">
+                  {language === 'el' ? 'Οδηγίες Φροντίδας' : 'Care Instructions'}
+                </h3>
+                <ul className="space-y-2">
+                  {(language === 'el' ? details.care.el : details.care.en).map((instruction, index) => (
+                    <li key={index} className="flex items-start gap-2 text-white/80 text-sm">
+                      <span className="text-white/50">•</span>
+                      <span>{instruction}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
