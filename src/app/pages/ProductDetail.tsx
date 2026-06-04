@@ -236,7 +236,7 @@ export default function ProductDetail() {
     );
   }
 
-  if (!product || !details || product.hidden) {
+  if (!product || product.hidden) {
     return (
       <div className="pt-24 pb-40 px-5 text-center">
         <div className="max-w-4xl mx-auto">
@@ -301,39 +301,45 @@ export default function ProductDetail() {
             </div>
 
             {/* Material */}
-            <div className="mb-6">
-              <h3 className="text-white mb-2">
-                {language === 'el' ? 'Υλικό' : 'Material'}
-              </h3>
-              <p className="text-white/80">
-                {language === 'el' ? details.material.el : details.material.en}
-              </p>
-            </div>
+            {details?.material && (
+              <div className="mb-6">
+                <h3 className="text-white mb-2">
+                  {language === 'el' ? 'Υλικό' : 'Material'}
+                </h3>
+                <p className="text-white/80">
+                  {language === 'el' ? details.material.el : details.material.en}
+                </p>
+              </div>
+            )}
 
             {/* Description */}
-            <div className="mb-6">
-              <h3 className="text-white mb-2">
-                {language === 'el' ? 'Περιγραφή' : 'Description'}
-              </h3>
-              <p className="text-white/80 leading-relaxed">
-                {language === 'el' ? details.description.el : details.description.en}
-              </p>
-            </div>
+            {details?.description && (
+              <div className="mb-6">
+                <h3 className="text-white mb-2">
+                  {language === 'el' ? 'Περιγραφή' : 'Description'}
+                </h3>
+                <p className="text-white/80 leading-relaxed">
+                  {language === 'el' ? details.description.el : details.description.en}
+                </p>
+              </div>
+            )}
 
             {/* Features */}
-            <div className="mb-6">
-              <h3 className="text-white mb-3">
-                {language === 'el' ? 'Χαρακτηριστικά' : 'Features'}
-              </h3>
-              <ul className="space-y-2">
-                {(language === 'el' ? details.features.el : details.features.en).map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2 text-white/80">
-                    <Check className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {details?.features && (
+              <div className="mb-6">
+                <h3 className="text-white mb-3">
+                  {language === 'el' ? 'Χαρακτηριστικά' : 'Features'}
+                </h3>
+                <ul className="space-y-2">
+                  {(language === 'el' ? details.features.el : details.features.en).map((feature, index) => (
+                    <li key={index} className="flex items-start gap-2 text-white/80">
+                      <Check className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
