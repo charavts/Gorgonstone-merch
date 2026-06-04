@@ -93,7 +93,7 @@ export default function Home() {
           <ImageWithFallback
             src={gorgonstoneLogoImg}
             alt="Gorgonstone Logo"
-            className="w-[280px] sm:w-[380px] max-w-[90vw] h-auto"
+            className="w-[180px] sm:w-[240px] max-w-[90vw] h-auto"
             style={{ filter: 'brightness(0.75)' }}
           />
         </div>

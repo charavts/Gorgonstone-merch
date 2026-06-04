@@ -46,7 +46,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           src={currentImage}
           alt={product.name}
           className="w-full h-full object-contain transition-transform duration-300"
-          style={{ transform: isHovered ? 'scale(1.1)' : 'scale(1)' }}
+          style={{ transform: isHovered ? 'scale(1.1)' : 'scale(1)', mixBlendMode: 'screen' }}
         />
       </div>
       
