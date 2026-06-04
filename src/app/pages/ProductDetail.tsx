@@ -288,7 +288,7 @@ export default function ProductDetail() {
               src={currentImage}
               alt={product.name}
               className="w-full h-full object-contain transition-transform duration-300"
-              style={{ transform: isImageHovered ? 'scale(1.1)' : 'scale(1)', mixBlendMode: 'screen' }}
+              style={{ transform: isImageHovered ? 'scale(1.1)' : 'scale(1)' }}
             />
           </div>
 

@@ -225,7 +225,6 @@ export default function Cart() {
                     src={item.color && item.imageVariants ? item.imageVariants[item.color] : item.image}
                     alt={item.name}
                     className="w-full h-full object-contain"
-                    style={{ mixBlendMode: 'screen' }}
                   />
                 </div>
                 
