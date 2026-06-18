@@ -376,16 +376,13 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Edit/Add Form */}
-        {(editingProduct || showAddForm) && (
+        {/* Edit Form - Modal only */}
+        {editingProduct && !showAddForm && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-5">
             <div className="bg-[#56514f] rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-white text-2xl">
-                  {showAddForm 
-                    ? (language === 'el' ? 'Προσθήκη Προϊόντος' : 'Add Product')
-                    : (language === 'el' ? 'Επεξεργασία Προϊόντος' : 'Edit Product')
-                  }
+                  {language === 'el' ? 'Επεξεργασία Προϊόντος' : 'Edit Product'}
                 </h2>
                 <button
                   onClick={() => {
@@ -982,6 +979,119 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))
+            )}
+
+            {/* Add Product Form - Inline below products */}
+            {showAddForm && (
+              <div className="bg-[#56514f] rounded-lg p-8 mt-2">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-white text-2xl">
+                    {language === 'el' ? 'Προσθήκη Προϊόντος' : 'Add Product'}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setShowAddForm(false);
+                    }}
+                    className="text-white/70 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-white mb-2 block">
+                      {language === 'el' ? 'Όνομα Προϊόντος' : 'Product Name'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={editingProduct?.name || ''}
+                      onChange={(e) => setEditingProduct(prev => prev ? {...prev, name: e.target.value} : null)}
+                      className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-white mb-2 block">
+                      {language === 'el' ? 'Τιμή (€)' : 'Price (€)'} *
+                    </label>
+                    <input
+                      type="number"
+                      value={editingProduct?.price || 0}
+                      onChange={(e) => setEditingProduct(prev => prev ? {...prev, price: parseFloat(e.target.value)} : null)}
+                      className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-white mb-2 block">Stripe URL</label>
+                    <input
+                      type="text"
+                      value={editingProduct?.stripeUrl || ''}
+                      onChange={(e) => setEditingProduct(prev => prev ? {...prev, stripeUrl: e.target.value} : null)}
+                      className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Main Product Image */}
+                  <div>
+                    <label className="text-white mb-3 block">
+                      {language === 'el' ? 'Κύρια Εικόνα Προϊόντος' : 'Main Product Image'} <span className="text-white/50 text-sm">(optional)</span>
+                    </label>
+                    <div className="flex gap-3 mb-3">
+                      <label className="flex items-center gap-2 bg-black hover:bg-[#444] text-white px-4 py-3 rounded-lg transition-colors cursor-pointer">
+                        {uploadingImages['main'] ? (
+                          <><Loader className="w-4 h-4 animate-spin" /> {language === 'el' ? 'Ανέβασμα...' : 'Uploading...'}</>
+                        ) : (
+                          <><Upload className="w-4 h-4" /> {language === 'el' ? 'Ανέβασε Εικόνα' : 'Upload Image'}</>
+                        )}
+                        <input type="file" accept="image/*" onChange={handleMainImageUpload} className="hidden" disabled={uploadingImages['main']} />
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      value={editingProduct?.image || ''}
+                      onChange={(e) => setEditingProduct(prev => prev ? {...prev, image: e.target.value} : null)}
+                      className="w-full px-4 py-3 rounded-lg bg-[#444] text-white border border-white/20 focus:border-white/40 focus:outline-none"
+                      placeholder={language === 'el' ? 'ή βάλε URL εικόνας' : 'or paste image URL'}
+                    />
+                    {editingProduct?.image && (
+                      <div className="mt-4 p-4 bg-[#444] rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-white/70 text-sm">{language === 'el' ? 'Προεπισκόπηση:' : 'Preview:'}</p>
+                          <button onClick={() => setEditingProduct(prev => prev ? {...prev, image: ''} : null)} className="flex items-center gap-1 text-red-400 hover:text-red-300 text-sm transition-colors">
+                            <XCircle size={16} /> {language === 'el' ? 'Αφαίρεση' : 'Remove'}
+                          </button>
+                        </div>
+                        <img src={editingProduct.image} alt="Product preview" className="h-32 object-contain bg-white/10 rounded-lg" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={handleSaveProduct}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-black hover:bg-[#444] text-white px-6 py-3 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-5 h-5" />
+                      {saving
+                        ? (language === 'el' ? 'Αποθήκευση...' : 'Saving...')
+                        : (language === 'el' ? 'Αποθήκευση' : 'Save')
+                      }
+                    </button>
+                    <button
+                      onClick={() => { setEditingProduct(null); setShowAddForm(false); }}
+                      className="px-6 py-3 rounded-lg bg-[#444] hover:bg-[#555] text-white transition-colors cursor-pointer"
+                    >
+                      {language === 'el' ? 'Ακύρωση' : 'Cancel'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}
